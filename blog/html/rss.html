@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Code Miscellany</title>
+        <link>https://scotchka.github.io/blog/html/</link>
+        <description>Mostly Python</description>
+        <language>en-us</language>
+        <pubDate>Sat, 16 Jun 2018 00:00:00 -0700</pubDate>
+        
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/06/16/balance_brackets.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/06/16/balance_brackets.html</guid>
+            <title><![CDATA[Balance brackets with the call stack]]></title>
+            <description><![CDATA[<h1>Balance brackets with the call stack</h1>
+<p>A classic algorithm problem is to determine whether a string
+containing some sequences of brackets (possibly of different types)
+is balanced, that is, whether the string is a valid mathematical
+expression. For example, <span class="docutils literal"><span class="pre">()</span></span> is balanced, and <span class="docutils literal"><span class="pre">)(</span></span> is not.</p>
+<p>The typical solution involves iterating thru the string and maintaining
+a stack - pushing an opening bracket onto the stack when encountered,
+and popping it off when the corresponding closing bracket is seen.</p>
+<p>But why not, instead of making our own stack, use the call stack? Python’s
+<span class="docutils literal"><span class="pre">inspect</span></span> module allows us to do just that.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="kn">import</span> <span class="nn">inspect</span>
+</pre></div>
+</div>
+<p>This module’s <span class="docutils literal"><span class="pre">stack</span></span> function returns the call stack from top to bottom,
+so the previous frame is <span class="docutils literal"><span class="pre">stack()[1]</span></span>.</p>
+<p>We define a function <span class="docutils literal"><span class="pre">_stack</span></span> that
+iterates through a list of characters. Upon seeing an opening bracket, it pushes
+onto the call stack by calling itself, and in case of a closing bracket, pops by
+simply returning. By inspecting the previous frame, we ensure that the closing
+bracket matches the most recent opening bracket, and that there are no opening
+brackets left on the call stack at the end,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">_stack</span><span class="p">(</span><span class="n">chars</span><span class="p">):</span>
+    <span class="sd">"""Push/pop frames to/from call stack."""</span>
+    <span class="k">while</span> <span class="n">chars</span><span class="p">:</span>
+        <span class="n">char</span> <span class="o">=</span> <span class="n">chars</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">BRACKETS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">_stack</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span>  <span class="c1"># push</span>
+        <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">BRACKETS</span><span class="p">:</span>
+            <span class="n">previous</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">previous</span><span class="o">.</span><span class="n">function</span> <span class="o">!=</span> <span class="s2">"_stack"</span>
+                <span class="ow">or</span> <span class="n">previous</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s2">"char"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">BRACKETS</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span>
+            <span class="k">return</span>  <span class="c1"># pop</span>
+
+    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">"_stack"</span><span class="p">:</span>  <span class="c1"># check no brackets remain</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span>
+</pre></div>
+</div>
+<p>where <span class="docutils literal"><span class="pre">BRACKETS</span></span> is a mapping of closing to opening brackets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">BRACKETS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">")"</span><span class="p">:</span> <span class="s2">"("</span><span class="p">,</span> <span class="s2">"]"</span><span class="p">:</span> <span class="s2">"["</span><span class="p">,</span> <span class="s2">"}"</span><span class="p">:</span> <span class="s2">"{"</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>In the event of an unbalanced expression, <span class="docutils literal"><span class="pre">_stack</span></span> raises <span class="docutils literal"><span class="pre">IndexError</span></span>,
+hence we define <span class="docutils literal"><span class="pre">is_balanced</span></span> that wraps <span class="docutils literal"><span class="pre">_stack</span></span> inside of a try/except:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">is_balanced</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">"""Check whether brackets in given string balanced."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Some test examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">")("</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"{[}]"</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+]]></description>
+             <pubDate>Sat, 16 Jun 2018 00:00:00 -0700</pubDate>
+        </item>
+    
+    </channel>
+</rss>

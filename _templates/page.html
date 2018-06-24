@@ -1,5 +1,8 @@
 {% extends "!page.html" %}
 
-{% set script_files = script_files + ["_static/google_analytics.js"] %}
-
 {% set css_files = css_files + ["_static/style.css"] %}
+
+{% block footer %}
+    {{ super() }}
+    {% include "../_static/google_analytics.html" %}
+{% endblock %}

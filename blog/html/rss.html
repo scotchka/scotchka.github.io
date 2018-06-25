@@ -5,8 +5,85 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Sat, 16 Jun 2018 00:00:00 -0700</pubDate>
+        <pubDate>Sun, 24 Jun 2018 00:00:00 -0700</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/06/24/c_style_enum.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/06/24/c_style_enum.html</guid>
+            <title><![CDATA[A C style enum in Python]]></title>
+            <description><![CDATA[<h1>A C style enum in Python</h1>
+<p>The <a class="reference external" href="https://docs.python.org/3/library/enum.html#creating-an-enum">enum</a> standard module allows you to
+make names whose values are arbitrary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span/><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<p>It is convenient to use <span class="docutils literal"><span class="pre">Color.RED</span></span> in code because the compiler/interpreter will ensure against
+typos, and sensibly chosen names will enhance readibility. However, unlike in C, Python’s <span class="docutils literal"><span class="pre">enum</span></span>
+forces you to assign values. It would be nice if we can simply write</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">RED</span>
+    <span class="n">GREEN</span>
+    <span class="n">BLUE</span>
+</pre></div>
+</div>
+<p>and have the attributes autoincrement. It turns out that with a little metaprogramming, we can.</p>
+<p>Python 3 introduced <span class="docutils literal"><span class="pre">__prepare__</span></span>, which is a method on the metaclass invoked before class creation.
+It by default returns a dictionary, which will contain the class attributes required for class creation.
+For example, the statement <span class="docutils literal"><span class="pre">RED</span> <span class="pre">=</span> <span class="pre">1</span></span> above has the effect of adding a key/value pair to this
+dictionary: <span class="docutils literal"><span class="pre">prepared_dict['RED']</span> <span class="pre">=</span> <span class="pre">1</span></span>.</p>
+<p>The idea is to override <span class="docutils literal"><span class="pre">__prepare__</span></span> and return a customized dictonary that assigns each key the next
+available integer. Here is an implementation of this dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">AutoDict</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"__"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"__"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Under a class definition, for each variable that appears in an expression - as opposed to the left hand side
+of an assignment - Python will look up its value first in this dictionary, calling the <span class="docutils literal"><span class="pre">__getitem__</span></span>
+method, which in turn <strong>assigns</strong> to it the next integer.</p>
+<p>Then we create a metaclass with a <span class="docutils literal"><span class="pre">__prepare__</span></span> method that returns an instance of <span class="docutils literal"><span class="pre">AutoDict</span></span>,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">EnumMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__prepare__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">AutoDict</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and a base class that instantiates <span class="docutils literal"><span class="pre">EnumMeta</span></span></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Enum</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">EnumMeta</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Let’s try running the example above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">RED</span>
+<span class="gp">... </span>    <span class="n">GREEN</span>
+<span class="gp">... </span>    <span class="n">BLUE</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
+<span class="go">0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">GREEN</span>
+<span class="go">1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">BLUE</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>So we have an enum class that automatically assign and increment values to its attributes.</p>
+]]></description>
+             <pubDate>Sun, 24 Jun 2018 00:00:00 -0700</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/06/16/balance_brackets.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/06/16/balance_brackets.html</guid>

@@ -1,12 +1,13 @@
 class Cat:
     def __repr__(self):
-        return "<🐱>"
+        return "<😻>"
 
 
 class MetaCat(type):
     def __repr__(cls):
-        return "<class 🐱>"
+        return cls.repr_string
 
 
 class FancyCat(metaclass=MetaCat):
-    pass
+    repr_string = "<class 😻>"
+

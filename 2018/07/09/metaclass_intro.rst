@@ -42,7 +42,7 @@ our customized type. Here is a small example:
 Note that ``MetaCat`` descends from ``type`` and has a ``__repr__`` method that has a parameter
 ``cls``. This is to emphasize that instances of ``MetaCat`` are themselves classes.
 
-We can instantiate a class in the usual way, except for an addtional optional parameter.
+We can instantiate a class in the usual way, except for an additional optional parameter.
 
 .. literalinclude:: meta_cats.py
     :pyobject: FancyCat

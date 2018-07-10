@@ -100,7 +100,7 @@ our customized type. Here is a small example:</p>
 </div>
 <p>Note that <span class="docutils literal"><span class="pre">MetaCat</span></span> descends from <span class="docutils literal"><span class="pre">type</span></span> and has a <span class="docutils literal"><span class="pre">__repr__</span></span> method that has a parameter
 <span class="docutils literal"><span class="pre">cls</span></span>. This is to emphasize that instances of <span class="docutils literal"><span class="pre">MetaCat</span></span> are themselves classes.</p>
-<p>We can instantiate a class in the usual way, except for an addtional optional parameter.</p>
+<p>We can instantiate a class in the usual way, except for an additional optional parameter.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">FancyCat</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaCat</span><span class="p">):</span>
     <span class="n">repr_string</span> <span class="o">=</span> <span class="s2">"&lt;class 😻&gt;"</span>
 </pre></div>

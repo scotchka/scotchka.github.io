@@ -62,6 +62,10 @@ instead of <span class="docutils literal"><span class="pre">type</span></span>. 
 </pre></div>
 </div>
 <p>Indeed, the <span class="docutils literal"><span class="pre">__repr__</span></span> method defined on <span class="docutils literal"><span class="pre">MetaCat</span></span> is called, and returns a customized representaion.</p>
+<p>To summarize, every class in Python is an instance of some class, often referred to as a metaclass to
+distinguish it from other classes. <span class="docutils literal"><span class="pre">type</span></span> is the built-in metaclass of which <span class="docutils literal"><span class="pre">int</span></span>, <span class="docutils literal"><span class="pre">dict</span></span>, and your own
+classes are instances. And just like with most classes, you can subclass <span class="docutils literal"><span class="pre">type</span></span> to make custom metaclasses,
+analogous to subclassing <span class="docutils literal"><span class="pre">object</span></span> to make custom classes.</p>
 ]]></description>
              <pubDate>Mon, 09 Jul 2018 00:00:00 -0700</pubDate>
         </item>

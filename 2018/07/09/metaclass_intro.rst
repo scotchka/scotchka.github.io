@@ -59,3 +59,8 @@ Finally, let's see what happens when we evaluate the class ``FancyCat`` on the P
     :lines: 12-13
 
 Indeed, the ``__repr__`` method defined on ``MetaCat`` is called, and returns a customized representaion.
+
+To summarize, every class in Python is an instance of some class, often referred to as a metaclass to
+distinguish it from other classes. ``type`` is the built-in metaclass of which ``int``, ``dict``, and your own
+classes are instances. And just like with most classes, you can subclass ``type`` to make custom metaclasses,
+analogous to subclassing ``object`` to make custom classes.

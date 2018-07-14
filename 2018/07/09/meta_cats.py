@@ -10,4 +10,3 @@ class MetaCat(type):
 
 class FancyCat(metaclass=MetaCat):
     repr_string = "<class 😻>"
-

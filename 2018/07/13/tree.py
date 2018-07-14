@@ -33,22 +33,22 @@ def traverse_recursive(node):
 
 def traverse_iterative(tree):
 
-   stack = []
+    stack = []
 
-   stack.append((tree, 'right'))
-   stack.append((tree, 'left'))
+    stack.append((tree, "right"))
+    stack.append((tree, "left"))
 
-   while stack:
-       node, state = stack.pop()
-       if state == 'left':
-           if node.left:
-               stack.append((node.left, 'right'))
-               stack.append((node.left, 'left'))
-       elif state == 'right':
-           print(node)
-           if node.right:
-               stack.append((node.right, 'right'))
-               stack.append((node.right, 'left'))
+    while stack:
+        node, state = stack.pop()
+        if state == "left":
+            if node.left:
+                stack.append((node.left, "right"))
+                stack.append((node.left, "left"))
+        elif state == "right":
+            print(node)
+            if node.right:
+                stack.append((node.right, "right"))
+                stack.append((node.right, "left"))
 
-       else:
-           raise ValueError('unknown state')
+        else:
+            raise ValueError("unknown state")

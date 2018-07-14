@@ -5,7 +5,7 @@ class Node:
         self.right = right
 
     def __repr__(self):
-        return f"<{ self.value }>"
+        return repr(self.value)
 
     @classmethod
     def make_tree(cls, values):
@@ -31,12 +31,12 @@ def traverse_recursive(node):
         traverse_recursive(node.right)
 
 
-def traverse_iterative(tree):
+def traverse_iterative(node):
 
     stack = []
 
-    stack.append((tree, "right"))
-    stack.append((tree, "left"))
+    stack.append((node, "right"))
+    stack.append((node, "left"))
 
     while stack:
         node, state = stack.pop()
@@ -52,3 +52,26 @@ def traverse_iterative(tree):
 
         else:
             raise ValueError("unknown state")
+
+
+def traverse_tail_recursive(stack):
+
+    if not stack:
+        return
+
+    node, state = stack.pop()
+
+    if state == "left":
+        if node.left:
+            stack.append((node.left, "right"))
+            stack.append((node.left, "left"))
+    elif state == "right":
+        print(node)
+        if node.right:
+            stack.append((node.right, "right"))
+            stack.append((node.right, "left"))
+
+    else:
+        raise ValueError("unknown state")
+
+    traverse_tail_recursive(stack)

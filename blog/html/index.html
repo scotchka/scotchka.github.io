@@ -63,6 +63,154 @@
                 </li>
               </ul>
           </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>July 13, 2018</span>
+        </div>
+        <div class="section">
+            <h1><a href="2018/07/13/tree_traversal_the_hard_way.html">Tree traversal made hard</a></h1>
+<p>Tree traversal is a well known task for which recursion is simple and natural. We define a Node
+class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">make_tree</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">mid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">mid</span><span class="p">],</span>
+            <span class="n">left</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">make_tree</span><span class="p">(</span><span class="n">values</span><span class="p">[:</span><span class="n">mid</span><span class="p">]),</span>
+            <span class="n">right</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">make_tree</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The class method <span class="docutils literal"><span class="pre">make_tree</span></span> returns the root node of a balanced binary tree from a list of values.
+If the list is sorted, then the tree is a binary search tree (BST). A BST has the important property
+that if you do an in-order traversal of the nodes, you will visit them in order.
+A recursive implementation of in-order traversal is straight forward.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_recursive</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">:</span>
+        <span class="n">traverse_recursive</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
+        <span class="n">traverse_recursive</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s test it with a small sorted list of integers and verify that the nodes are printed out in order.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">make_tree</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">traverse_recursive</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<p>Now, what if we insist on traversing <strong>without</strong> recursion? In lieu of the call stack, we need to
+maintain our own stack. Each item in our stack would hold the same information as a call frame.
+In <span class="docutils literal"><span class="pre">traverse_recursive</span></span> there are two potential recursive calls, each call adding another frame to
+the call stack. Since a recursive call interrupts the calling frame, our stack must maintain a
+state - whether or not the left side of the BST has been examined. Let’s designate the possibilities
+for this state <span class="docutils literal"><span class="pre">"left"</span></span> and <span class="docutils literal"><span class="pre">"right"</span></span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_iterative</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+
+    <span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">))</span>
+    <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">))</span>
+
+    <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">"left"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">))</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">"right"</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">))</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"unknown state"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Each call frame becomes, in our stack, a pair of items - as the stack is popped off, the left side of
+each node is examined before the right. The analogue of a recursive call is pushing another pair to the stack.
+Let’s test <span class="docutils literal"><span class="pre">traverse_iterative</span></span> on the same BST.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">traverse_iterative</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<p>The iterative implementation of tree traversal is less intuitive than the recursive version, which nicely
+illustrates that recursion is sometimes <strong>much easier</strong> than iteration. Though iteration has the advantage
+of not growing the call stack, and readily leads to tail recursion.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_tail_recursive</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">stack</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">node</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">"left"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">))</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s2">"right"</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">))</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"unknown state"</span><span class="p">)</span>
+
+    <span class="n">traverse_tail_recursive</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calling <span class="docutils literal"><span class="pre">traverse_tail_recursive</span></span> with the same tree but wrapped inside of a stack:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">traverse_tail_recursive</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s2">"right"</span><span class="p">),</span> 
+<span class="gp">... </span>        <span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="s2">"left"</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="p">]</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="go">1</span>
+<span class="go">2</span>
+<span class="go">3</span>
+<span class="go">4</span>
+<span class="go">5</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+<p>Python does not offer tail call optimization, but in languages that do, this example suggests a recipe
+for turning a recursive function into a tail recursive function.</p>
+
+        </div>
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        </div><div class="separator post_separator"></div><div class="timestamp postmeta">
             <span>July 09, 2018</span>
         </div>
         <div class="section">
@@ -294,6 +442,8 @@ hence we define <span class="docutils literal"><span class="pre">is_balanced</sp
     </div></article><aside class="sidebar"><section><div class="widget">
     <h1>Recent Posts</h1>
     <ul><li>
+            <a href="2018/07/13/tree_traversal_the_hard_way.html">Tree traversal made hard</a>
+        </li><li>
             <a href="2018/07/09/metaclass_intro.html">Metaclasses made simple</a>
         </li><li>
             <a href="2018/06/24/c_style_enum.html">A C style enum in Python</a>

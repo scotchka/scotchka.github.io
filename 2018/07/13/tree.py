@@ -50,9 +50,6 @@ def traverse_iterative(node):
                 stack.append((node.right, "right"))
                 stack.append((node.right, "left"))
 
-        else:
-            raise ValueError("unknown state")
-
 
 def traverse_tail_recursive(stack):
 
@@ -70,8 +67,5 @@ def traverse_tail_recursive(stack):
         if node.right:
             stack.append((node.right, "right"))
             stack.append((node.right, "left"))
-
-    else:
-        raise ValueError("unknown state")
 
     traverse_tail_recursive(stack)

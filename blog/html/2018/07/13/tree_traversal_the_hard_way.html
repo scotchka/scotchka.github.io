@@ -142,9 +142,6 @@ for this state <span class="docutils literal"><span class="pre">&quot;left&quot;
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
                 <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">))</span>
                 <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">))</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown state&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Each call frame becomes, in our stack, a pair of items - as the stack is popped off, the left side of
@@ -178,9 +175,6 @@ of not growing the call stack, and readily leads to tail recursion.</p>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">:</span>
             <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">))</span>
             <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">))</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown state&quot;</span><span class="p">)</span>
 
     <span class="n">traverse_tail_recursive</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
 </pre></div>

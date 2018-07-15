@@ -40,7 +40,7 @@ class.</p>
 <p>The class method <span class="docutils literal"><span class="pre">make_tree</span></span> returns the root node of a balanced binary tree from a list of values.
 If the list is sorted, then the tree is a binary search tree (BST). A BST has the important property
 that if you do an in-order traversal of the nodes, you will visit them in order.
-A recursive implementation of in-order traversal is straight forward.</p>
+A recursive implementation of in-order traversal is straightforward.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_recursive</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">:</span>
         <span class="n">traverse_recursive</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
@@ -66,7 +66,7 @@ A recursive implementation of in-order traversal is straight forward.</p>
 <p>Now, what if we insist on traversing <strong>without</strong> recursion? In lieu of the call stack, we need to
 maintain our own stack. Each item in our stack would hold the same information as a call frame.
 In <span class="docutils literal"><span class="pre">traverse_recursive</span></span> there are two potential recursive calls, each call adding another frame to
-the call stack. Since a recursive call interrupts the calling frame, our stack must maintain a
+the call stack. Since a recursive call suspends the calling frame, our stack must maintain a
 state - whether or not the left side of the BST has been examined. Let’s designate the possibilities
 for this state <span class="docutils literal"><span class="pre">"left"</span></span> and <span class="docutils literal"><span class="pre">"right"</span></span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_iterative</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
@@ -101,7 +101,11 @@ Let’s test <span class="docutils literal"><span class="pre">traverse_iterative
 <span class="go">6</span>
 </pre></div>
 </div>
-<p>The iterative implementation of tree traversal is less intuitive than the recursive version, which nicely
+<p>Note that an in-order traversal is different from a depth-first search (DFS). To implement DFS iteratively,
+we simply maintain a stack of nodes without the additional state. This is because DFS first checks whether
+the target node has been found (and if so, exits) <strong>before</strong> adding the child nodes to the stack. Hence there
+is no reason to “remember” the parent node. Formally, DFS on a binary tree is equivalent to a pre-order traversal.</p>
+<p>The iterative implementation of in-order tree traversal is less intuitive than the recursive version, which nicely
 illustrates that recursion is sometimes <strong>much easier</strong> than iteration. Though iteration has the advantage
 of not growing the call stack, and readily leads to tail recursion.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">traverse_tail_recursive</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
@@ -140,7 +144,7 @@ of not growing the call stack, and readily leads to tail recursion.</p>
 </pre></div>
 </div>
 <p>Python does not offer tail call optimization, but in languages that do, this example suggests a recipe
-for turning a recursive function into a tail recursive function.</p>
+for turning a recursive function into a tail recursive function: via an intermediate iterative implementation.</p>
 ]]></description>
              <pubDate>Fri, 13 Jul 2018 00:00:00 -0700</pubDate>
         </item>

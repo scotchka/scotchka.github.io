@@ -23,10 +23,10 @@ As a use case, let's consider the familiar exercise of a Markov chain text gener
 
 Given a string, we construct a list of consecutive pairs - or bigrams - of words that appear. For
 each unique bigram, its second word may be the first word in multiple other bigrams. We
-randomly choose one such bigram, and repeat the process. The sequence of words that is encountered
+randomly choose one such bigram, and repeat the process. The sequence of words encountered
 in this random series of jumps through the text constitutes the Markov text.
 
-First, we define a function that to make a data structure that allows for random traversal:
+First, we define a function to make a data structure that allows for random traversal:
 
 .. literalinclude:: markov.py
     :pyobject: make_chain

@@ -9,7 +9,15 @@ True
 >>> from random import seed
 >>> seed(42)
 
->>> from markov import markov
+>>> from markov import make_chain, make_text
+
+>>> chain = make_chain('a a a b')
+>>> bigram = ('a', 'a')
+>>> link = chain[bigram]
+>>> link
+{('a', 'a'): [{...}, {('a', 'b'): [{('b', 'a'): [{...}]}]}]}
+>>> link[bigram][0] is link
+True
 
 >>> s = """
 ... Beautiful is better than ugly.
@@ -19,7 +27,8 @@ True
 ... Flat is better than nested.
 ... Sparse is better than dense."""
 
->>> markov(s)
+>>> chain = make_chain(s)
+>>> make_text(chain)
 'than ugly. Explicit is better than implicit. Simple is better than ugly. Explicit is better than nested. Sparse is better than complicated. '
 
 '''

@@ -5,8 +5,101 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Fri, 13 Jul 2018 00:00:00 -0700</pubDate>
+        <pubDate>Sat, 21 Jul 2018 00:00:00 -0700</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/07/21/self_referential_markov.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/07/21/self_referential_markov.html</guid>
+            <title><![CDATA[Self-referential data structures]]></title>
+            <description><![CDATA[<h1>Self-referential data structures</h1>
+<p>Most data structures in Python can hold arbitrary heterogenous data. This is because
+the underlying C structures contain pointers to other locations in memory. For example,
+a Python list is implemented in C as an array of pointers.</p>
+<p>A perhaps startling consequence is that a mutable data structure - such as a list - can
+contain itself as an element:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">[1, 2, 3, [...]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="n">lst</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>A self-referential data structure, though somewhat obscure, can be more compact.
+As a use case, let’s consider the familiar exercise of a Markov chain text generator.</p>
+<p>Given a string, we construct a list of consecutive pairs - or bigrams - of words that appear. For
+each unique bigram, its second word may be the first word in multiple other bigrams. We
+randomly choose one such bigram, and repeat the process. The sequence of words that is encountered
+in this random series of jumps through the text constitutes the Markov text.</p>
+<p>First, we define a function that to make a data structure that allows for random traversal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">make_chain</span><span class="p">(</span><span class="n">raw_text</span><span class="p">):</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">raw_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">chain</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">bigrams</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">words</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">words</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">+</span> <span class="p">[(</span><span class="n">words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bigram</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bigrams</span><span class="p">):</span>
+        <span class="n">next_bigram</span> <span class="o">=</span> <span class="n">bigrams</span><span class="p">[(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">bigrams</span><span class="p">)]</span>
+
+        <span class="n">chain</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">next_bigram</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">bigram</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">next_links</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">bigram</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">next_links</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chain</span><span class="p">[</span><span class="n">next_bigram</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">chain</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">chain</span></span> is self-referential because the <span class="docutils literal"><span class="pre">append</span></span> method, which adds to a list inside
+<span class="docutils literal"><span class="pre">chain</span></span>, takes as argument a component of <span class="docutils literal"><span class="pre">chain</span></span> itself. We can gain more insight with
+a small example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">chain</span> <span class="o">=</span> <span class="n">make_chain</span><span class="p">(</span><span class="s1">'a a a b'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bigram</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span> <span class="o">=</span> <span class="n">chain</span><span class="p">[</span><span class="n">bigram</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span>
+<span class="go">{('a', 'a'): [{...}, {('a', 'b'): [{('b', 'a'): [{...}]}]}]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">link</span><span class="p">[</span><span class="n">bigram</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="n">link</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">link</span></span> is a dictionary of one key-value pair. The key is a bigram, and the value is a list
+of dictionaries, each having the same structure as <span class="docutils literal"><span class="pre">link</span></span>. Though the structure is finite,
+we can “descend” into it indefinitely. This suggests a simple strategy for random traversal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">make_text</span><span class="p">(</span><span class="n">chain</span><span class="p">):</span>
+
+    <span class="n">link</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="n">text</span> <span class="o">=</span> <span class="s2">""</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">140</span><span class="p">:</span>
+        <span class="n">bigram</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span> <span class="o">+</span> <span class="n">bigram</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">" "</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">link</span><span class="p">[</span><span class="n">bigram</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">text</span>
+</pre></div>
+</div>
+<p>Let’s generate a random text based on a famous work of literature:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="gp">... </span><span class="s2">Beautiful is better than ugly.</span>
+<span class="gp">... </span><span class="s2">Explicit is better than implicit.</span>
+<span class="gp">... </span><span class="s2">Simple is better than complex.</span>
+<span class="gp">... </span><span class="s2">Complex is better than complicated.</span>
+<span class="gp">... </span><span class="s2">Flat is better than nested.</span>
+<span class="gp">... </span><span class="s2">Sparse is better than dense."""</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">chain</span> <span class="o">=</span> <span class="n">make_chain</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">make_text</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
+<span class="go">'than ugly. Explicit is better than implicit. Simple is better than ugly. Explicit is better than nested. Sparse is better than complicated. '</span>
+</pre></div>
+</div>
+<p>To be sure, compared to the usual implementations of Markov text generation, this version
+is quite inscrutable. It is to be taken as a proof of principle. You should almost always
+avoid self-referential data structures in production code!</p>
+]]></description>
+             <pubDate>Sat, 21 Jul 2018 00:00:00 -0700</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/07/13/tree_traversal_the_hard_way.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/07/13/tree_traversal_the_hard_way.html</guid>

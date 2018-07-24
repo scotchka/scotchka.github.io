@@ -1,26 +1,33 @@
-from random import choice
+import random
 
 
-def markov(raw_text):
+def make_chain(raw_text):
     words = raw_text.split()
 
-    tokens = {}
+    chain = {}
 
     bigrams = list(zip(words[:-1], words[1:])) + [(words[-1], words[0])]
 
     for i, bigram in enumerate(bigrams):
         next_bigram = bigrams[(i + 1) % len(bigrams)]
 
-        tokens.setdefault(next_bigram, {})
-        tokens.setdefault(bigram, {}).setdefault(bigram, []).append(tokens[next_bigram])
+        chain.setdefault(next_bigram, {})
+        link = chain.setdefault(bigram, {})
+        next_links = link.setdefault(bigram, [])
+        next_links.append(chain[next_bigram])
 
-    link = choice(list(tokens.values()))
+    return chain
+
+
+def make_text(chain):
+
+    link = random.choice(list(chain.values()))
 
     text = ""
 
     while len(text) < 140:
         bigram = list(link.keys())[0]
         text = text + bigram[0] + " "
-        link = choice(link[bigram])
+        link = random.choice(link[bigram])
 
     return text

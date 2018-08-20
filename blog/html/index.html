@@ -63,6 +63,62 @@
                 </li>
               </ul>
           </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>August 20, 2018</span>
+        </div>
+        <div class="section">
+            <h1><a href="2018/08/20/little_endian.html">Determining endianness</a></h1>
+<p>“Endianness” is how the digits in a number are arranged.
+Humans write numbers from the most significant digit to the least significant
+digit. This order is called “big-endian” – big end first. The reverse is called
+“little-endian”.</p>
+<p>In computer memory, a number is represented as a consecutive sequence of bits. A <strong>long</strong> integer takes
+up 8 bytes (64 bits), for example.
+This raises a question: does the lowest address byte represent the most significant or the least
+sigificant digits of the number?</p>
+<p>To decide this, we can run a short C program:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">endian.c</span></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="c1">#include &lt;stdio.h&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">unsigned</span> <span class="n">long</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">*</span> <span class="mi">256</span><span class="p">;</span>
+  <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+  <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sizeof</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s2">"</span><span class="si">%d</span><span class="s2"> "</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>For simplicity, we initialize an <cite>unsigned long</cite> and assign its address
+to a pointer to an <cite>unsigned char</cite>. This means that if we add an integer to the pointer,
+the resulting address will advance by that many bytes. Simply put, we print the base 256
+representation of the long integer.</p>
+<p>The output on an Intel x86 machine is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/>$ gcc endian.c
+$ ./a.out
+0 0 1 0 0 0 0 0
+</pre></div>
+</div>
+<p>The third and only nonzero byte is 1. This establishes that the integer is stored in memory in
+little-endian fashion.</p>
+
+        </div>
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        <div class="comments">
+            <a href="https://scotchka.github.io/blog/html/2018/08/20/little_endian.html#disqus_thread" data-disqus-identifier="2018/08/20/little_endian">Leave a comment</a>
+        </div></div><div class="separator post_separator"></div><div class="timestamp postmeta">
             <span>July 21, 2018</span>
         </div>
         <div class="section">
@@ -547,6 +603,8 @@ hence we define <span class="docutils literal"><span class="pre">is_balanced</sp
     </div></article><aside class="sidebar"><section><div class="widget">
     <h1>Recent Posts</h1>
     <ul><li>
+            <a href="2018/08/20/little_endian.html">Determining endianness</a>
+        </li><li>
             <a href="2018/07/21/self_referential_markov.html">Self-referential data structures</a>
         </li><li>
             <a href="2018/07/13/tree_traversal_the_hard_way.html">Tree traversal made hard</a>

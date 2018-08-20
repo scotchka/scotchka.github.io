@@ -5,8 +5,58 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Sat, 21 Jul 2018 00:00:00 -0700</pubDate>
+        <pubDate>Mon, 20 Aug 2018 00:00:00 -0700</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/08/20/little_endian.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/08/20/little_endian.html</guid>
+            <title><![CDATA[Determining endianness]]></title>
+            <description><![CDATA[<h1>Determining endianness</h1>
+<p>“Endianness” is how the digits in a number are arranged.
+Humans write numbers from the most significant digit to the least significant
+digit. This order is called “big-endian” – big end first. The reverse is called
+“little-endian”.</p>
+<p>In computer memory, a number is represented as a consecutive sequence of bits. A <strong>long</strong> integer takes
+up 8 bytes (64 bits), for example.
+This raises a question: does the lowest address byte represent the most significant or the least
+sigificant digits of the number?</p>
+<p>To decide this, we can run a short C program:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">endian.c</span></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="c1">#include &lt;stdio.h&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="n">void</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">unsigned</span> <span class="n">long</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">256</span> <span class="o">*</span> <span class="mi">256</span><span class="p">;</span>
+  <span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">unsigned</span> <span class="n">char</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+
+  <span class="nb">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">sizeof</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s2">"</span><span class="si">%d</span><span class="s2"> "</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="n">i</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>For simplicity, we initialize an <cite>unsigned long</cite> and assign its address
+to a pointer to an <cite>unsigned char</cite>. This means that if we add an integer to the pointer,
+the resulting address will advance by that many bytes. Simply put, we print the base 256
+representation of the long integer.</p>
+<p>The output on an Intel x86 machine is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/>$ gcc endian.c
+$ ./a.out
+0 0 1 0 0 0 0 0
+</pre></div>
+</div>
+<p>The third and only nonzero byte is 1. This establishes that the integer is stored in memory in
+little-endian fashion.</p>
+]]></description>
+             <pubDate>Mon, 20 Aug 2018 00:00:00 -0700</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/07/21/self_referential_markov.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/07/21/self_referential_markov.html</guid>

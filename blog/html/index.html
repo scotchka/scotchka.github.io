@@ -63,6 +63,65 @@
                 </li>
               </ul>
           </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>October 09, 2018</span>
+        </div>
+        <div class="section">
+            <h1><a href="2018/10/09/instantiating_functions_and_modules.html">Instantiating functions and modules</a></h1>
+<p>In Python, anything that you can assign to a variable is an object, including a function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">inc</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">inc</span><span class="p">)</span>
+<span class="go">&lt;class 'function'&gt;</span>
+</pre></div>
+</div>
+<p>Normally, Python creates a function object upon function definition, but we can also
+instantiate a function like other objects - by calling its class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">Function</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">inc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_inc</span> <span class="o">=</span> <span class="n">Function</span><span class="p">(</span><span class="n">inc</span><span class="o">.</span><span class="vm">__code__</span><span class="p">,</span> <span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_inc</span><span class="p">()</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>The class <span class="docutils literal"><span class="pre">Function</span></span> takes two required arguments. First, a code object which is a data
+structure containing compiled bytecode. Second, a dictionary that is the global scope
+of the resulting function. Indeed, calling the original <span class="docutils literal"><span class="pre">inc</span></span> would raise an error since
+<span class="docutils literal"><span class="pre">x</span></span> is not defined, but <span class="docutils literal"><span class="pre">another_inc</span></span> works because its global scope does have <span class="docutils literal"><span class="pre">x</span></span>.</p>
+<p>More generally, the global scope of a function is the module that contains it. Let’s confirm
+this with a function from a standard module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">re</span> <span class="k">import</span> <span class="n">match</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">match</span><span class="o">.</span><span class="vm">__globals__</span> <span class="ow">is</span> <span class="n">re</span><span class="o">.</span><span class="vm">__dict__</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>A module is a simple object whose main purpose is to hold objects that belong to it - in
+other words, provide a namespace. It turns out that we can also dynamically instantiate a
+module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">Module</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">re</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span> <span class="o">=</span> <span class="n">Module</span><span class="p">(</span><span class="s1">'another module'</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">dir</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+<span class="go">['__doc__', '__loader__', '__name__', '__package__', '__spec__']</span>
+</pre></div>
+</div>
+<p>Finally, we change the global scope of our existing function to the new module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">mod</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_inc</span><span class="o">.</span><span class="vm">__globals__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">another_inc</span><span class="p">()</span>
+<span class="go">43</span>
+</pre></div>
+</div>
+
+        </div>
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        <div class="comments">
+            <a href="https://scotchka.github.io/blog/html/2018/10/09/instantiating_functions_and_modules.html#disqus_thread" data-disqus-identifier="2018/10/09/instantiating_functions_and_modules">Leave a comment</a>
+        </div></div><div class="separator post_separator"></div><div class="timestamp postmeta">
             <span>August 20, 2018</span>
         </div>
         <div class="section">
@@ -603,6 +662,8 @@ hence we define <span class="docutils literal"><span class="pre">is_balanced</sp
     </div></article><aside class="sidebar"><section><div class="widget">
     <h1>Recent Posts</h1>
     <ul><li>
+            <a href="2018/10/09/instantiating_functions_and_modules.html">Instantiating functions and modules</a>
+        </li><li>
             <a href="2018/08/20/little_endian.html">Determining endianness</a>
         </li><li>
             <a href="2018/07/21/self_referential_markov.html">Self-referential data structures</a>

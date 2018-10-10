@@ -4,6 +4,7 @@ Sitemap
 .. toctree::
    :maxdepth: 1
 
+   2018/10/09/instantiating_functions_and_modules
    2018/08/20/little_endian
    2018/07/21/self_referential_markov
    2018/07/13/tree_traversal_the_hard_way

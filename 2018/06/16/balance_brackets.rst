@@ -49,5 +49,5 @@ hence we define ``is_balanced`` that wraps ``_stack`` inside of a try/except:
 
 Some test examples:
 
-.. literalinclude:: test_balance_brackets.py
+.. literalinclude:: test_balance_brackets.txt
     :lines: 3-10

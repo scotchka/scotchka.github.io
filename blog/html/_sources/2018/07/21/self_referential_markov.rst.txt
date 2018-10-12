@@ -15,7 +15,7 @@ a Python list is implemented in C as an array of pointers.
 A perhaps startling consequence is that a mutable data structure - such as a list - can
 contain itself as an element:
 
-.. literalinclude:: test_markov.py
+.. literalinclude:: test_markov.txt
     :lines: 2-7
 
 A self-referential data structure, though somewhat obscure, can be more compact.
@@ -35,7 +35,7 @@ First, we define a function to make a data structure that allows for random trav
 ``chain``, takes as argument a component of ``chain`` itself. We can gain more insight with
 a small example:
 
-.. literalinclude:: test_markov.py
+.. literalinclude:: test_markov.txt
     :lines: 14-20
 
 ``link`` is a dictionary of one key-value pair. The key is a bigram, and the value is a list
@@ -47,7 +47,7 @@ we can "descend" into it indefinitely. This suggests a simple strategy for rando
 
 Let's generate a random text based on a famous work of literature:
 
-.. literalinclude:: test_markov.py
+.. literalinclude:: test_markov.txt
     :lines: 22-32
 
 To be sure, compared to the usual implementations of Markov text generation, this version

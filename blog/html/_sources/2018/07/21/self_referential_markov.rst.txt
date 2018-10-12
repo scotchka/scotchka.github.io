@@ -15,8 +15,12 @@ a Python list is implemented in C as an array of pointers.
 A perhaps startling consequence is that a mutable data structure - such as a list - can
 contain itself as an element:
 
-.. literalinclude:: test_markov.txt
-    :lines: 2-7
+>>> lst = [1, 2, 3]
+>>> lst.append(lst)
+>>> lst
+[1, 2, 3, [...]]
+>>> lst[-1] is lst
+True
 
 A self-referential data structure, though somewhat obscure, can be more compact.
 As a use case, let's consider the familiar exercise of a Markov chain text generator.
@@ -35,8 +39,19 @@ First, we define a function to make a data structure that allows for random trav
 ``chain``, takes as argument a component of ``chain`` itself. We can gain more insight with
 a small example:
 
-.. literalinclude:: test_markov.txt
-    :lines: 14-20
+..
+	>>> from random import seed
+	>>> seed(42)
+
+	>>> from markov import make_chain, make_text
+
+>>> chain = make_chain('a a a b')
+>>> bigram = ('a', 'a')
+>>> link = chain[bigram]
+>>> link
+{('a', 'a'): [{...}, {('a', 'b'): [{('b', 'a'): [{...}]}]}]}
+>>> link[bigram][0] is link
+True
 
 ``link`` is a dictionary of one key-value pair. The key is a bigram, and the value is a list
 of dictionaries, each having the same structure as ``link``. Though the structure is finite,
@@ -47,8 +62,19 @@ we can "descend" into it indefinitely. This suggests a simple strategy for rando
 
 Let's generate a random text based on a famous work of literature:
 
-.. literalinclude:: test_markov.txt
-    :lines: 22-32
+.. code-block:: default
+
+	>>> s = """
+	... Beautiful is better than ugly.
+	... Explicit is better than implicit.
+	... Simple is better than complex.
+	... Complex is better than complicated.
+	... Flat is better than nested.
+	... Sparse is better than dense."""
+
+	>>> chain = make_chain(s)
+	>>> make_text(chain)
+	'than ugly. Explicit is better than implicit. Simple is better than ugly. Explicit is better than nested. Sparse is better than complicated. '
 
 To be sure, compared to the usual implementations of Markov text generation, this version
 is quite inscrutable. It is to be taken as a proof of principle. You should almost always

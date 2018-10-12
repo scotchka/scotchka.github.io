@@ -23,10 +23,8 @@ This gives a customized representation to the instance at the command line:
 
 However, this ``__repr__`` has no effect on the class itself:
 
-.. code-block:: python
-
-    >>> Cat
-    <class 'meta_cats.Cat'>
+>>> Cat
+<class 'meta_cats.Cat'>
 
 The reason is that a method defined on a class acts on instances of the class but not
 the class itself. But what if the class is itself an instance? An instance of what class?

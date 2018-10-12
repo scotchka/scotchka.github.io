@@ -24,8 +24,20 @@ A recursive implementation of in-order traversal is straightforward.
 
 Let's test it with a small sorted list of integers and verify that the nodes are printed out in order.
 
-.. literalinclude:: test_tree.txt
-    :lines: 4-12
+..
+	>>> from tree import Node, traverse_recursive, traverse_iterative, traverse_tail_recursive
+
+.. code-block:: default
+
+	>>> tree = Node.make_tree([1, 2, 3, 4, 5, 6])
+
+	>>> traverse_recursive(tree)
+	1
+	2
+	3
+	4
+	5
+	6
 
 Now, what if we insist on traversing **without** recursion? In lieu of the call stack, we need to
 maintain our own stack. Each item in our stack would hold the same information as a call frame.
@@ -41,8 +53,13 @@ Each call frame becomes, in our stack, a pair of items - as the stack is popped 
 each node is examined before the right. The analogue of a recursive call is pushing another pair to the stack.
 Let's test ``traverse_iterative`` on the same BST.
 
-.. literalinclude:: test_tree.txt
-    :lines: 14-20
+>>> traverse_iterative(tree)
+1
+2
+3
+4
+5
+6
 
 Note that an in-order traversal is different from a depth-first search (DFS). To implement DFS iteratively,
 we simply maintain a stack of nodes without the additional state. This is because DFS first checks whether
@@ -58,8 +75,18 @@ of not growing the call stack, and readily leads to tail recursion.
 
 Calling ``traverse_tail_recursive`` with the same tree but wrapped inside of a stack:
 
-.. literalinclude:: test_tree.txt
-    :lines: 22-33
+>>> traverse_tail_recursive(
+...     [
+...         (tree, "right"),
+...         (tree, "left")
+...     ]
+... )
+1
+2
+3
+4
+5
+6
 
 Python does not offer tail call optimization, but in languages that do, this example suggests a recipe
 for turning a recursive function into a tail recursive function: via an intermediate iterative implementation.

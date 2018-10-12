@@ -15,22 +15,25 @@ You probably have added the ``__repr__`` method to a Python class:
 
 This gives a customized representation to the instance at the command line:
 
-.. literalinclude:: test_meta_cats.txt
-    :lines: 3-4
+..
+	>>> from meta_cats import Cat, FancyCat, MetaCat
+
+>>> Cat()
+<😻>
 
 However, this ``__repr__`` has no effect on the class itself:
 
 .. code-block:: python
 
     >>> Cat
-    <class '__main__.Cat'>
+    <class 'meta_cats.Cat'>
 
 The reason is that a method defined on a class acts on instances of the class but not
 the class itself. But what if the class is itself an instance? An instance of what class?
 Python provides an easy way to find out:
 
-.. literalinclude:: test_meta_cats.txt
-    :lines: 6-7
+>>> type(Cat)
+<class 'type'>
 
 So we see that a class is an instance of the built-in class ``type``. This means that we
 should be able to subclass ``type``, add methods to it, and instantiate classes using
@@ -50,13 +53,13 @@ We can instantiate a class in the usual way, except for an additional optional p
 The ``metaclass`` parameter in the class definition instructs Python to make an instance of ``MetaCat``
 instead of ``type``. Let's verify this:
 
-.. literalinclude:: test_meta_cats.txt
-    :lines: 9-10
+>>> type(FancyCat) is MetaCat
+True
 
 Finally, let's see what happens when we evaluate the class ``FancyCat`` on the Python command line:
 
-.. literalinclude:: test_meta_cats.txt
-    :lines: 12-13
+>>> FancyCat
+<class 😻>
 
 Indeed, the ``__repr__`` method defined on ``MetaCat`` is called, and returns a customized representaion.
 

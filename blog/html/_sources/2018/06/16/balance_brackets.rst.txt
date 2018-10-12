@@ -49,5 +49,14 @@ hence we define ``is_balanced`` that wraps ``_stack`` inside of a try/except:
 
 Some test examples:
 
-.. literalinclude:: test_balance_brackets.txt
-    :lines: 3-10
+.. 
+	>>> from balance_brackets import is_balanced
+
+>>> is_balanced("[]")
+True
+>>> is_balanced(")(")
+False
+>>> is_balanced("{[}]")
+False
+>>> is_balanced("(")
+False

@@ -60,7 +60,22 @@ and a base class that instantiates ``EnumMeta``
 
 Let's try running the example above:
 
-.. literalinclude:: test_enum3.txt
-    :lines: 4-16
+..
+    >>> from enum3 import Enum
+
+.. code-block:: default
+
+    >>> class Color(Enum):
+    ...     RED
+    ...     GREEN
+    ...     BLUE
+    >>> Color.RED
+    0
+
+    >>> Color.GREEN
+    1
+
+    >>> Color.BLUE
+    2
 
 So we have an enum class that automatically assign and increment values to its attributes.

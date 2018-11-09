@@ -6,7 +6,7 @@ def qsort_recursive(lst, start=0, end=None):
         return
 
     pivot = lst[start]
-    rest = lst[start + 1:end]
+    rest = lst[start + 1 : end]
 
     left = [item for item in rest if item <= pivot]
     right = [item for item in rest if item > pivot]
@@ -15,7 +15,6 @@ def qsort_recursive(lst, start=0, end=None):
 
     qsort_recursive(lst, start, start + len(left))
     qsort_recursive(lst, end - len(right), end)
-
 
 
 def qsort_stackless(lst):

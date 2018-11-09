@@ -5,8 +5,86 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Tue, 09 Oct 2018 00:00:00 -0700</pubDate>
+        <pubDate>Thu, 08 Nov 2018 00:00:00 -0800</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/11/08/stackless_quicksort.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/11/08/stackless_quicksort.html</guid>
+            <title><![CDATA[Stackless quicksort]]></title>
+            <description><![CDATA[<h1>Stackless quicksort</h1>
+<p>Quicksort is a famous example of a recursive algorithm. Here is a sub-optimal
+implementation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">pivot</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+    <span class="n">rest</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+    <span class="n">left</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;=</span> <span class="n">pivot</span><span class="p">]</span>
+    <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="p">]</span>
+
+    <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="p">[</span><span class="n">pivot</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span>
+
+    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">))</span>
+    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">),</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For brevity, we use list slicing instead of swaps, but the discussion does not
+depend on how the partitioning is done.</p>
+<p>Let’s check that it works for a simple case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">[1, 2, 3, 4, 5]</span>
+</pre></div>
+</div>
+<p>In the above implementation, observe that each recursive call stands alone, simply sorting a
+segment of the list. As this <a class="reference external" href="https://bertrandmeyer.com/2014/12/07/lampsort/">article</a> points out,
+the recursive call stack serves merely to ensure that the list is divided into smaller segments
+until every item is a pivot or belongs to a segment of one item.</p>
+<p>Because the order in which different parts of the list is sorted is immaterial, we don’t need recursion
+or even a stack for that matter. Here is an implementation of quicksort using a set to track which segments
+are still to be sorted:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">qsort_stackless</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="n">not_sorted</span> <span class="o">=</span> <span class="p">{(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">))}</span>
+
+    <span class="k">while</span> <span class="n">not_sorted</span><span class="p">:</span>
+        <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">not_sorted</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="n">segment</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+
+        <span class="n">pivot</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">rest</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">left</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;=</span> <span class="n">pivot</span><span class="p">]</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="p">]</span>
+
+        <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="p">[</span><span class="n">pivot</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">end</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">),</span> <span class="n">end</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The set <span class="docutils literal"><span class="pre">not_sorted</span></span> contains start and end indices of segments which remain to be sorted. Note that
+the <span class="docutils literal"><span class="pre">pop</span></span> method returns an <strong>arbitrary</strong> element of a set, which becomes empty when no unsorted segments
+remain. The list is then sorted. Let’s check the same test case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">qsort_stackless</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
+<span class="go">[1, 2, 3, 4, 5]</span>
+</pre></div>
+</div>
+]]></description>
+             <pubDate>Thu, 08 Nov 2018 00:00:00 -0800</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/10/09/instantiating_functions_and_modules.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/10/09/instantiating_functions_and_modules.html</guid>

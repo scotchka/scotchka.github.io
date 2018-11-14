@@ -5,16 +5,10 @@ def qsort_recursive(lst, start=0, end=None):
     if end - start < 2:
         return
 
-    pivot = lst[start]
-    rest = lst[start + 1 : end]
+    pivot_position = partition(lst, start, end)
 
-    left = [item for item in rest if item <= pivot]
-    right = [item for item in rest if item > pivot]
-
-    lst[start:end] = left + [pivot] + right
-
-    qsort_recursive(lst, start, start + len(left))
-    qsort_recursive(lst, end - len(right), end)
+    qsort_recursive(lst, start, pivot_position)
+    qsort_recursive(lst, pivot_position + 1, end)
 
 
 def qsort_stackless(lst):
@@ -23,18 +17,22 @@ def qsort_stackless(lst):
     while not_sorted:
         start, end = not_sorted.pop()
 
-        segment = lst[start:end]
+        pivot_position = partition(lst, start, end)
 
-        pivot = segment[0]
-        rest = segment[1:]
+        if pivot_position - start > 0:
+            not_sorted.add((start, pivot_position))
 
-        left = [item for item in rest if item <= pivot]
-        right = [item for item in rest if item > pivot]
+        if end - (pivot_position + 1) > 0:
+            not_sorted.add((pivot_position + 1, end))
 
-        lst[start:end] = left + [pivot] + right
 
-        if len(left) > 0:
-            not_sorted.add((start, start + len(left)))
+def partition(lst, start, end):
+    pivot = lst[start]
+    rest = lst[start + 1 : end]
 
-        if len(right) > 0:
-            not_sorted.add((end - len(right), end))
+    left = [item for item in rest if item <= pivot]
+    right = [item for item in rest if item > pivot]
+
+    lst[start:end] = left + [pivot] + right
+
+    return start + len(left)

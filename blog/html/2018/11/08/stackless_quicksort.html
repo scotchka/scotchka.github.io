@@ -76,16 +76,24 @@ implementation:</p>
     <span class="k">if</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span>
 
+    <span class="n">pivot_position</span> <span class="o">=</span> <span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+
+    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">pivot_position</span><span class="p">)</span>
+    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">pivot_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <span class="docutils literal"><span class="pre">partition</span></span> function chooses a pivot value and places it at the correct position, with smaller values
+to its left and larger values to its right. It also returns the final position of the pivot value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
     <span class="n">pivot</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
-    <span class="n">rest</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+    <span class="n">rest</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">end</span><span class="p">]</span>
 
     <span class="n">left</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;=</span> <span class="n">pivot</span><span class="p">]</span>
     <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="p">]</span>
 
     <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="p">[</span><span class="n">pivot</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span>
 
-    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">))</span>
-    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">),</span> <span class="n">end</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For brevity, we use list slicing instead of swaps, but the discussion does not
@@ -110,21 +118,13 @@ are still to be sorted:</p>
     <span class="k">while</span> <span class="n">not_sorted</span><span class="p">:</span>
         <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">not_sorted</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
-        <span class="n">segment</span> <span class="o">=</span> <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">pivot_position</span> <span class="o">=</span> <span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 
-        <span class="n">pivot</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">rest</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="n">pivot_position</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">pivot_position</span><span class="p">))</span>
 
-        <span class="n">left</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;=</span> <span class="n">pivot</span><span class="p">]</span>
-        <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">rest</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&gt;</span> <span class="n">pivot</span><span class="p">]</span>
-
-        <span class="n">lst</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="p">[</span><span class="n">pivot</span><span class="p">]</span> <span class="o">+</span> <span class="n">right</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">end</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="p">),</span> <span class="n">end</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="o">-</span> <span class="p">(</span><span class="n">pivot_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">not_sorted</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pivot_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The set <span class="docutils literal"><span class="pre">not_sorted</span></span> contains start and end indices of segments which remain to be sorted. Note that

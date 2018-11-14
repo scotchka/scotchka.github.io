@@ -14,6 +14,12 @@ implementation:
 .. literalinclude:: qsort.py
     :pyobject: qsort_recursive
 
+The ``partition`` function chooses a pivot value and places it at the correct position, with smaller values
+to its left and larger values to its right. It also returns the final position of the pivot value.
+
+.. literalinclude:: qsort.py
+    :pyobject: partition
+
 For brevity, we use list slicing instead of swaps, but the discussion does not
 depend on how the partitioning is done.
 

@@ -36,11 +36,13 @@ the desired result. The queue ensures that smaller lists are merged before large
 pair being merged does not become too different in size - unbalanced pairs would degrade runtime.
 
 ..
-    >>> from msort import sort_stackless
+    >>> from msort import mergesort, mergesort_stackless
+    >>> lst = [3, 2, 1, 4, 5]
+    >>> mergesort(lst)
+    [1, 2, 3, 4, 5]
 
 Checking a test case:
 
 >>> lst = [3, 2, 1, 4, 5]
->>> qsort_stackless(lst)
->>> lst
+>>> mergesort_stackless(lst)
 [1, 2, 3, 4, 5]

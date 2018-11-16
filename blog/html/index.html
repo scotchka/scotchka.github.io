@@ -142,7 +142,7 @@ pair being merged does not become too different in size - unbalanced pairs would
             <h1><a href="2018/11/08/stackless_quicksort.html">Stackless quicksort</a></h1>
 <p>Quicksort is a famous example of a recursive algorithm. Here is a sub-optimal
 implementation:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">qsort</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
 
@@ -151,8 +151,8 @@ implementation:</p>
 
     <span class="n">pivot_position</span> <span class="o">=</span> <span class="n">partition</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 
-    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">pivot_position</span><span class="p">)</span>
-    <span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">pivot_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+    <span class="n">qsort</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">pivot_position</span><span class="p">)</span>
+    <span class="n">qsort</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">pivot_position</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The <span class="docutils literal"><span class="pre">partition</span></span> function chooses a pivot value and places it at the correct position, with smaller values
@@ -171,13 +171,6 @@ to its left and larger values to its right. It also returns the final position o
 </div>
 <p>For brevity, we use list slicing instead of swaps, but the discussion does not
 depend on how the partitioning is done.</p>
-<p>Let’s check that it works for a simple case:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">qsort_recursive</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span>
-<span class="go">[1, 2, 3, 4, 5]</span>
-</pre></div>
-</div>
 <p>In the above implementation, observe that each recursive call stands alone, simply sorting a
 segment of the list. As this <a class="reference external" href="https://bertrandmeyer.com/2014/12/07/lampsort/">article</a> points out,
 the recursive call stack serves merely to ensure that the list is divided into smaller segments

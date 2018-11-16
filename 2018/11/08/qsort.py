@@ -1,4 +1,4 @@
-def qsort_recursive(lst, start=0, end=None):
+def qsort(lst, start=0, end=None):
     if end is None:
         end = len(lst)
 
@@ -7,8 +7,8 @@ def qsort_recursive(lst, start=0, end=None):
 
     pivot_position = partition(lst, start, end)
 
-    qsort_recursive(lst, start, pivot_position)
-    qsort_recursive(lst, pivot_position + 1, end)
+    qsort(lst, start, pivot_position)
+    qsort(lst, pivot_position + 1, end)
 
 
 def qsort_stackless(lst):

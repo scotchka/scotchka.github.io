@@ -5,8 +5,75 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Thu, 08 Nov 2018 00:00:00 -0800</pubDate>
+        <pubDate>Thu, 15 Nov 2018 00:00:00 -0800</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/11/15/stackless_merge_sort.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/11/15/stackless_merge_sort.html</guid>
+            <title><![CDATA[Stackless merge sort]]></title>
+            <description><![CDATA[<h1>Stackless merge sort</h1>
+<p>Merge sort divides a list into smaller lists of one or zero items, which
+are trivially sorted, and then merges them pairwise until one list remains.
+Here is a typical recursive implementation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">mergesort</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">lst</span><span class="p">[:]</span>
+
+    <span class="n">mid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+    <span class="k">return</span> <span class="n">merge</span><span class="p">(</span><span class="n">mergesort</span><span class="p">(</span><span class="n">lst</span><span class="p">[:</span><span class="n">mid</span><span class="p">]),</span> <span class="n">mergesort</span><span class="p">(</span><span class="n">lst</span><span class="p">[</span><span class="n">mid</span><span class="p">:]))</span>
+</pre></div>
+</div>
+<p>Note that the base case returns a copy, not the original list, to be
+consistent with the general behavior. The <span class="docutils literal"><span class="pre">merge</span></span> function is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+
+    <span class="n">merged</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="n">left</span> <span class="ow">and</span> <span class="n">right</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">left</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">right</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">merged</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="n">merged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+    <span class="n">merged</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">merged</span>
+</pre></div>
+</div>
+<p>For simplicity, we use <cite>pop(0)</cite> which is inefficient but easily remedied
+with indexing.</p>
+<p>Instead of dividing the list recursively, we can put each item into a list
+by itself, and then merge them iteratively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">mergesort_stackless</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+
+    <span class="n">queue</span> <span class="o">=</span> <span class="p">[[</span><span class="n">item</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">]</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">queue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We maintain the individual lists in a queue. In each iteration, we take two lists from the queue,
+merge them, and put the combined list back in the queue. Eventually just one list remains, which is
+the desired result. The queue ensures that smaller lists are merged before larger ones, so that the
+pair being merged does not become too different in size - unbalanced pairs would degrade runtime.</p>
+<p>Checking a test case:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">lst</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mergesort_stackless</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+<span class="go">[1, 2, 3, 4, 5]</span>
+</pre></div>
+</div>
+]]></description>
+             <pubDate>Thu, 15 Nov 2018 00:00:00 -0800</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/11/08/stackless_quicksort.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/11/08/stackless_quicksort.html</guid>

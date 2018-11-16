@@ -16,6 +16,16 @@ def merge(left, right):
 
 def mergesort(lst):
 
+    if len(lst) < 2:
+        return lst[:]
+
+    mid = len(lst) // 2
+
+    return merge(mergesort(lst[:mid]), mergesort(lst[mid:]))
+
+
+def mergesort_stackless(lst):
+
     queue = [[item] for item in lst]
 
     while len(queue) >= 2:

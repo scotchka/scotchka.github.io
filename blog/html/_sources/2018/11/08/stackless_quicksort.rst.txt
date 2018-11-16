@@ -44,7 +44,7 @@ are still to be sorted:
 
 The set ``not_sorted`` contains start and end indices of segments which remain to be sorted. Note that
 the ``pop`` method returns an **arbitrary** element of a set, which becomes empty when no unsorted segments
-remain. The list is then sorted. Let's check the same test case:
+remain. The list is then sorted. Let's check a test case:
 
 >>> lst = [3, 2, 1, 4, 5]
 >>> qsort_stackless(lst)

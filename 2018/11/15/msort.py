@@ -3,7 +3,7 @@ def merge(left, right):
     merged = []
 
     while left and right:
-        if left[0] < right[0]:
+        if left[0] <= right[0]:
             merged.append(left.pop(0))
         else:
             merged.append(right.pop(0))

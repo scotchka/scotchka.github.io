@@ -4,6 +4,7 @@ Sitemap
 .. toctree::
    :maxdepth: 1
 
+   2018/12/31/building_a_data_structure_with_nothing_but_functions
    2018/11/15/stackless_merge_sort
    2018/11/08/stackless_quicksort
    2018/10/09/instantiating_functions_and_modules

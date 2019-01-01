@@ -5,8 +5,76 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Thu, 15 Nov 2018 00:00:00 -0800</pubDate>
+        <pubDate>Mon, 31 Dec 2018 00:00:00 -0800</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2018/12/31/building_a_data_structure_with_nothing_but_functions.html</link>
+            <guid>https://scotchka.github.io/blog/html/2018/12/31/building_a_data_structure_with_nothing_but_functions.html</guid>
+            <title><![CDATA[Building a data structure with nothing but functions]]></title>
+            <description><![CDATA[<h1>Building a data structure with nothing but functions</h1>
+<p>A simple but far reaching consequence of being able to nest functions is that
+data can be stored in the enclosing scope  - or closure - of
+the inner function. Consider the following function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">make_node</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">next_node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">func</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">next_node</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When <span class="docutils literal"><span class="pre">make_node</span></span> is called with two arguments, they are attached to the closure
+of the returned function. Subsequently, we can access the two arguments via</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">node</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">next_node</span><span class="p">:</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">next_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">node</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">next_node</span><span class="p">:</span> <span class="n">next_node</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">node</span> <span class="o">=</span> <span class="n">make_node</span><span class="p">(</span><span class="s2">"head"</span><span class="p">,</span> <span class="s2">"tail"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">value</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="go">'head'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">next_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="go">'tail'</span>
+</pre></div>
+</div>
+<p>With these functions in hand, it is easy to implement a stack as a linked list.
+We define the usual stack operations</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">stack</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">make_node</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span><span class="p">(</span><span class="n">stack</span><span class="p">),</span> <span class="n">next_node</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The behavior is as expected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">push</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">push</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">push</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span><span class="p">,</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span><span class="p">,</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span><span class="p">,</span> <span class="n">stack</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>It is remarkable that this stack does not use any built-in data structure such as an array, nor does it
+build the linked list by instantiating node objects. Rather, there is a chain of functions wherein each
+function’s closure contains a value and a reference to the next function.</p>
+<p>This discussion was inspired by the classic
+<a class="reference external" href="https://mitpress.mit.edu/sites/default/files/sicp/index.html">Structure and Interpretation of Computer Programs</a>.
+In particular, section 2.1 introduces the notion of using closures to build data structures.</p>
+]]></description>
+             <pubDate>Mon, 31 Dec 2018 00:00:00 -0800</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/11/15/stackless_merge_sort.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/11/15/stackless_merge_sort.html</guid>

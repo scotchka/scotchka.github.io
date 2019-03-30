@@ -28,7 +28,7 @@
         <script>window.jQuery || document.write('<script src="_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
         <script src="_static/plugins.js"></script>
         <script src="_static/main.js"></script>
-        <link rel="search" title="Search" href="search.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="rss.html" /><script type="text/javascript">
+        <link rel="search" title="Search" href="search.html" /><link rel="next" title="Older" href="page2.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="rss.html" /><script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
         VERSION:     '1.7.0',
@@ -63,6 +63,54 @@
                 </li>
               </ul>
           </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>March 30, 2019</span>
+        </div>
+        <div class="section">
+            <h1><a href="2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html">Why is an omnivore a kind of vegetarian?</a></h1>
+<p>An important principle in object oriented design is that you can replace an object of one type with another object
+of its subtype, and the code should still work. For example, suppose we are creating a calorie counter for various
+foods. We have a parent class</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Food</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calories</span> <span class="o">=</span> <span class="n">calories</span>
+</pre></div>
+</div>
+<p>and child classes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Vegetable</span><span class="p">(</span><span class="n">Food</span><span class="p">):</span>
+    <span class="n">is_leafy</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Meat</span><span class="p">(</span><span class="n">Food</span><span class="p">):</span>
+    <span class="n">is_bloody</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Consider a function that returns the calories of an item of food:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">get_calories</span><span class="p">(</span><span class="n">food</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">food</span><span class="o">.</span><span class="n">calories</span>
+</pre></div>
+</div>
+<p>Because a child class inherits the methods and attributes from its parent class -
+possibly overriding some and adding others - any code that expects <span class="docutils literal"><span class="pre">Food</span></span> will
+also work with <span class="docutils literal"><span class="pre">Vegetable</span></span> and <span class="docutils literal"><span class="pre">Meat</span></span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Food</span><span class="p">(</span><span class="s1">'gruel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="go">500</span>
+</pre></div>
+</div>
+
+        </div>
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        </div><div class="separator post_separator"></div><div class="timestamp postmeta">
             <span>December 31, 2018</span>
         </div>
         <div class="section">
@@ -170,7 +218,7 @@ consistent with the general behavior. The <span class="docutils literal"><span c
     <span class="k">return</span> <span class="n">merged</span>
 </pre></div>
 </div>
-<p>For simplicity, we use <cite>pop(0)</cite> which is inefficient but easily remedied
+<p>For simplicity, we use <span class="docutils literal"><span class="pre">pop(0)</span></span> which is inefficient but easily remedied
 with indexing.</p>
 <p>Instead of dividing the list recursively, we can put each item into a list
 by itself, and then merge them iteratively:</p>
@@ -781,90 +829,16 @@ method, which in turn <strong>assigns</strong> to it the next integer.</p>
         </div>
         
         
-        </div><div class="separator post_separator"></div><div class="timestamp postmeta">
-            <span>June 16, 2018</span>
-        </div>
-        <div class="section">
-            <h1><a href="2018/06/16/balance_brackets.html">Balance brackets with the call stack</a></h1>
-<p>A classic algorithm problem is to determine whether a string
-containing some sequences of brackets (possibly of different types)
-is balanced, that is, whether the string is a valid mathematical
-expression. For example, <span class="docutils literal"><span class="pre">()</span></span> is balanced, and <span class="docutils literal"><span class="pre">)(</span></span> is not.</p>
-<p>The typical solution involves iterating thru the string and maintaining
-a stack - pushing an opening bracket onto the stack when encountered,
-and popping it off when the corresponding closing bracket is seen.</p>
-<p>But why not, instead of making our own stack, use the call stack? Python’s
-<span class="docutils literal"><span class="pre">inspect</span></span> module allows us to do just that.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="kn">import</span> <span class="nn">inspect</span>
-</pre></div>
-</div>
-<p>This module’s <span class="docutils literal"><span class="pre">stack</span></span> function returns the call stack from top to bottom,
-so the previous frame is <span class="docutils literal"><span class="pre">stack()[1]</span></span>.</p>
-<p>We define a function <span class="docutils literal"><span class="pre">_stack</span></span> that
-iterates through a list of characters. Upon seeing an opening bracket, it pushes
-onto the call stack by calling itself, and in case of a closing bracket, pops by
-simply returning. By inspecting the previous frame, we ensure that the closing
-bracket matches the most recent opening bracket, and that there are no opening
-brackets left on the call stack at the end,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">_stack</span><span class="p">(</span><span class="n">chars</span><span class="p">):</span>
-    <span class="sd">"""Push/pop frames to/from call stack."""</span>
-    <span class="k">while</span> <span class="n">chars</span><span class="p">:</span>
-        <span class="n">char</span> <span class="o">=</span> <span class="n">chars</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">BRACKETS</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">_stack</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span>  <span class="c1"># push</span>
-        <span class="k">elif</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">BRACKETS</span><span class="p">:</span>
-            <span class="n">previous</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">previous</span><span class="o">.</span><span class="n">function</span> <span class="o">!=</span> <span class="s2">"_stack"</span>
-                <span class="ow">or</span> <span class="n">previous</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s2">"char"</span><span class="p">]</span> <span class="o">!=</span> <span class="n">BRACKETS</span><span class="p">[</span><span class="n">char</span><span class="p">]</span>
-            <span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span>
-            <span class="k">return</span>  <span class="c1"># pop</span>
-
-    <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">function</span> <span class="o">==</span> <span class="s2">"_stack"</span><span class="p">:</span>  <span class="c1"># check no brackets remain</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span>
-</pre></div>
-</div>
-<p>where <span class="docutils literal"><span class="pre">BRACKETS</span></span> is a mapping of closing to opening brackets:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">BRACKETS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">")"</span><span class="p">:</span> <span class="s2">"("</span><span class="p">,</span> <span class="s2">"]"</span><span class="p">:</span> <span class="s2">"["</span><span class="p">,</span> <span class="s2">"}"</span><span class="p">:</span> <span class="s2">"{"</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>In the event of an unbalanced expression, <span class="docutils literal"><span class="pre">_stack</span></span> raises <span class="docutils literal"><span class="pre">IndexError</span></span>,
-hence we define <span class="docutils literal"><span class="pre">is_balanced</span></span> that wraps <span class="docutils literal"><span class="pre">_stack</span></span> inside of a try/except:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">is_balanced</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
-    <span class="sd">"""Check whether brackets in given string balanced."""</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">_stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="p">))</span>
-    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>Some test examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"[]"</span><span class="p">)</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">")("</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"{[}]"</span><span class="p">)</span>
-<span class="go">False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">is_balanced</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span>
-<span class="go">False</span>
-</pre></div>
-</div>
-
-        </div>
-        <div class="postmeta">
-        <div class="author">
-            <span>Posted by Henry Chen</span>
-        </div>
-        
-        
         </div><div class="archive_link">
         <a href="archive.html"> &mdash; Blog Archive &mdash; </a>
-    </div></article><aside class="sidebar"><section><div class="widget">
+    </div><ul class="related clearfix">
+            <li class="left"></li>
+            <li class="right"><a href="page2.html">Older</a> &raquo; </li>
+        </ul></article><aside class="sidebar"><section><div class="widget">
     <h1>Recent Posts</h1>
     <ul><li>
+            <a href="2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html">Why is an omnivore a kind of vegetarian?</a>
+        </li><li>
             <a href="2018/12/31/building_a_data_structure_with_nothing_but_functions.html">Building a data structure with nothing but functions</a>
         </li><li>
             <a href="2018/11/15/stackless_merge_sort.html">Stackless merge sort</a>
@@ -882,8 +856,6 @@ hence we define <span class="docutils literal"><span class="pre">is_balanced</sp
             <a href="2018/07/09/metaclass_intro.html">Metaclasses made simple</a>
         </li><li>
             <a href="2018/06/24/c_style_enum.html">A C style enum in Python</a>
-        </li><li>
-            <a href="2018/06/16/balance_brackets.html">Balance brackets with the call stack</a>
         </li></ul>
 </div>
 </section><section><div class="widget" id="searchbox" role="search">

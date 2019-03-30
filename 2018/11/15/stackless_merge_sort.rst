@@ -21,7 +21,7 @@ consistent with the general behavior. The ``merge`` function is:
 .. literalinclude:: msort.py
     :pyobject: merge
 
-For simplicity, we use `pop(0)` which is inefficient but easily remedied
+For simplicity, we use ``pop(0)`` which is inefficient but easily remedied
 with indexing.
 
 Instead of dividing the list recursively, we can put each item into a list

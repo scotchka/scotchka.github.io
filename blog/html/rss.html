@@ -5,8 +5,52 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Mon, 31 Dec 2018 00:00:00 -0800</pubDate>
+        <pubDate>Sat, 30 Mar 2019 00:00:00 -0700</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html</link>
+            <guid>https://scotchka.github.io/blog/html/2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html</guid>
+            <title><![CDATA[Why is an omnivore a kind of vegetarian?]]></title>
+            <description><![CDATA[<h1>Why is an omnivore a kind of vegetarian?</h1>
+<p>An important principle in object oriented design is that you can replace an object of one type with another object
+of its subtype, and the code should still work. For example, suppose we are creating a calorie counter for various
+foods. We have a parent class</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Food</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calories</span> <span class="o">=</span> <span class="n">calories</span>
+</pre></div>
+</div>
+<p>and child classes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Vegetable</span><span class="p">(</span><span class="n">Food</span><span class="p">):</span>
+    <span class="n">is_leafy</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Meat</span><span class="p">(</span><span class="n">Food</span><span class="p">):</span>
+    <span class="n">is_bloody</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Consider a function that returns the calories of an item of food:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">def</span> <span class="nf">get_calories</span><span class="p">(</span><span class="n">food</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">food</span><span class="o">.</span><span class="n">calories</span>
+</pre></div>
+</div>
+<p>Because a child class inherits the methods and attributes from its parent class -
+possibly overriding some and adding others - any code that expects <span class="docutils literal"><span class="pre">Food</span></span> will
+also work with <span class="docutils literal"><span class="pre">Vegetable</span></span> and <span class="docutils literal"><span class="pre">Meat</span></span>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Food</span><span class="p">(</span><span class="s1">'gruel'</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_calories</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="go">500</span>
+</pre></div>
+</div>
+]]></description>
+             <pubDate>Sat, 30 Mar 2019 00:00:00 -0700</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2018/12/31/building_a_data_structure_with_nothing_but_functions.html</link>
             <guid>https://scotchka.github.io/blog/html/2018/12/31/building_a_data_structure_with_nothing_but_functions.html</guid>
@@ -111,7 +155,7 @@ consistent with the general behavior. The <span class="docutils literal"><span c
     <span class="k">return</span> <span class="n">merged</span>
 </pre></div>
 </div>
-<p>For simplicity, we use <cite>pop(0)</cite> which is inefficient but easily remedied
+<p>For simplicity, we use <span class="docutils literal"><span class="pre">pop(0)</span></span> which is inefficient but easily remedied
 with indexing.</p>
 <p>Instead of dividing the list recursively, we can put each item into a list
 by itself, and then merge them iteratively:</p>

@@ -102,6 +102,102 @@ also work with <span class="docutils literal"><span class="pre">Vegetable</span>
 <span class="go">500</span>
 </pre></div>
 </div>
+<p>This ability to replace with a subtype is known as the “Liskov Substitution Principle”.</p>
+<p>Now let’s turn to the consumers of food. Here is a possible class hierarchy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Omnivore</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"YUM!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Vegetarian</span><span class="p">(</span><span class="n">Omnivore</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">food</span><span class="p">,</span> <span class="n">Vegetable</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">" EWW"</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">food</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Carnivore</span><span class="p">(</span><span class="n">Omnivore</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">food</span><span class="p">,</span> <span class="n">Meat</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">" EWW"</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">food</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">Vegetarian</span></span> and <span class="docutils literal"><span class="pre">Carnivore</span></span> override the <span class="docutils literal"><span class="pre">eat</span></span> method of <span class="docutils literal"><span class="pre">Omnivore</span></span> to raise an exception when
+fed an argument that violates their respective dietary restrictions. An omnivore can consume both <span class="docutils literal"><span class="pre">Vegetable</span></span>
+and <span class="docutils literal"><span class="pre">Meat</span></span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">potato YUM!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="go">steak YUM!</span>
+</pre></div>
+</div>
+<p>But a vegetarian cannot consume <span class="docutils literal"><span class="pre">Meat</span></span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Vegetarian</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">potato YUM!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">Exception</span>: <span class="n">steak EWW</span>
+</pre></div>
+</div>
+<p>Note that the code breaks when a <span class="docutils literal"><span class="pre">Vegetarian</span></span> replaces an <span class="docutils literal"><span class="pre">Omnivore</span></span>. Therefore, the
+Liskov Substitution Principle implies, perhaps counterintuitively, that <span class="docutils literal"><span class="pre">Vegetarian</span></span>
+is not a subclass of <span class="docutils literal"><span class="pre">Omnivore</span></span>.</p>
+<p>This dilemma is resolved by observing that a <span class="docutils literal"><span class="pre">Vegetarian</span></span> can be replaced by an <span class="docutils literal"><span class="pre">Omnivore</span></span>,
+and hence the class hierarchy should be inverted - <span class="docutils literal"><span class="pre">Omnivore</span></span> being a subclass of <span class="docutils literal"><span class="pre">Vegetarian</span></span>.
+Of course, we can repeat the argument for <span class="docutils literal"><span class="pre">Carnivore</span></span>, so <span class="docutils literal"><span class="pre">Omnivore</span></span> inherits from both
+<span class="docutils literal"><span class="pre">Vegetarian</span></span> and <span class="docutils literal"><span class="pre">Carnivore</span></span>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Vegetarian</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">food</span><span class="p">,</span> <span class="n">Vegetable</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">food</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"YUM!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Carnivore</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">food</span><span class="p">,</span> <span class="n">Meat</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">food</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">food</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">"YUM!"</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Omnivore</span><span class="p">(</span><span class="n">Vegetarian</span><span class="p">,</span> <span class="n">Carnivore</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The key difference here is that, instead of raising an error, <span class="docutils literal"><span class="pre">Vegetarian</span></span> and <span class="docutils literal"><span class="pre">Carnivore</span></span> pass
+the call to <span class="docutils literal"><span class="pre">eat</span></span> up the inheritance chain, hoping that another class is able to handle the food type.
+Now the code works as expected:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Vegetarian</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">potato YUM!</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="go">potato YUM!</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Carnivore</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="go">steak YUM!</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="go">steak YUM!</span>
+</pre></div>
+</div>
+<p>We see that a <span class="docutils literal"><span class="pre">Vegetarian</span></span> or <span class="docutils literal"><span class="pre">Carnivore</span></span> can be replaced by an <span class="docutils literal"><span class="pre">Omnivore</span></span>, so
+our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:
+a method of the child class should accept an argument type that is less restrictive
+(or not more restrictive) than the
+corresponding method of the parent class. An <span class="docutils literal"><span class="pre">Omnivore</span></span> can eat either <span class="docutils literal"><span class="pre">Vegetable</span></span> or <span class="docutils literal"><span class="pre">Meat</span></span>,
+whereas a <span class="docutils literal"><span class="pre">Vegetarian</span></span> or <span class="docutils literal"><span class="pre">Carnivore</span></span> can only eat one of the food types. Putting it more
+formally, argument types are “contravariant”.</p>
 
         </div>
         <div class="postmeta">

@@ -35,7 +35,7 @@ possibly overriding some and adding others - any code that expects ``Food`` will
 also work with ``Vegetable`` and ``Meat``.
 
 ..
-    >>> from liskov import Food, Vegetable, Meat, get_calories
+    >>> from liskov import Food, Vegetable, Meat, get_calories, Omnivore, Vegetarian
 
 >>> get_calories(Food('gruel', 1))
 1
@@ -44,3 +44,84 @@ also work with ``Vegetable`` and ``Meat``.
 >>> get_calories(Meat('steak', 500))
 500
 
+This ability to replace with a subtype is known as the "Liskov Substitution Principle".
+
+Now let's turn to the consumers of food. Here is a possible class hierarchy:
+
+.. literalinclude:: liskov.py
+    :pyobject: Omnivore
+
+.. literalinclude:: liskov.py
+    :pyobject: Vegetarian
+
+.. literalinclude:: liskov.py
+    :pyobject: Carnivore
+
+``Vegetarian`` and ``Carnivore`` override the ``eat`` method of ``Omnivore`` to raise an exception when
+fed an argument that violates their respective dietary restrictions. An omnivore can consume both ``Vegetable``
+and ``Meat``:
+
+>>> guest = Omnivore()
+>>> guest.eat(Vegetable('potato', 100))
+potato YUM!
+>>> guest.eat(Meat('steak', 500))
+steak YUM!
+
+But a vegetarian cannot consume ``Meat``:
+
+>>> guest = Vegetarian()
+>>> guest.eat(Vegetable('potato', 100))
+potato YUM!
+>>> guest.eat(Meat('steak', 500))
+Traceback (most recent call last):
+    ...
+Exception: steak EWW
+
+Note that the code breaks when a ``Vegetarian`` replaces an ``Omnivore``. Therefore, the
+Liskov Substitution Principle implies, perhaps counterintuitively, that ``Vegetarian``
+is not a subclass of ``Omnivore``.
+
+This dilemma is resolved by observing that a ``Vegetarian`` can be replaced by an ``Omnivore``,
+and hence the class hierarchy should be inverted - ``Omnivore`` being a subclass of ``Vegetarian``.
+Of course, we can repeat the argument for ``Carnivore``, so ``Omnivore`` inherits from both
+``Vegetarian`` and ``Carnivore``:
+
+.. literalinclude:: contravariant.py
+    :pyobject: Vegetarian
+
+.. literalinclude:: contravariant.py
+    :pyobject: Carnivore
+
+.. literalinclude:: contravariant.py
+    :pyobject: Omnivore
+
+The key difference here is that, instead of raising an error, ``Vegetarian`` and ``Carnivore`` pass
+the call to ``eat`` up the inheritance chain, hoping that another class is able to handle the food type.
+Now the code works as expected:
+
+..
+    >>> from contravariant import Vegetarian, Carnivore
+
+>>> guest = Vegetarian()
+>>> guest.eat(Vegetable('potato', 100))
+potato YUM!
+
+>>> guest = Omnivore()
+>>> guest.eat(Vegetable('potato', 100))
+potato YUM!
+
+>>> guest = Carnivore()
+>>> guest.eat(Meat('steak', 500))
+steak YUM!
+
+>>> guest = Omnivore()
+>>> guest.eat(Meat('steak', 500))
+steak YUM!
+
+We see that a ``Vegetarian`` or ``Carnivore`` can be replaced by an ``Omnivore``, so
+our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:
+a method of the child class should accept an argument type that is less restrictive
+(or not more restrictive) than the
+corresponding method of the parent class. An ``Omnivore`` can eat either ``Vegetable`` or ``Meat``,
+whereas a ``Vegetarian`` or ``Carnivore`` can only eat one of the food types. Putting it more
+formally, argument types are "contravariant".

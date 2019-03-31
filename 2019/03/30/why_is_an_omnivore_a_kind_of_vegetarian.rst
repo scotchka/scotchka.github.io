@@ -35,7 +35,7 @@ possibly overriding some and adding others - any code that expects ``Food`` will
 also work with ``Vegetable`` and ``Meat``.
 
 ..
-    >>> from liskov import Food, Vegetable, Meat, get_calories, Omnivore, Vegetarian
+    >>> from liskov import Food, Vegetable, Meat, get_calories, Omnivore, Vegetarian, Carnivore
 
 >>> get_calories(Food('gruel', 1))
 1
@@ -62,20 +62,28 @@ fed an argument that violates their respective dietary restrictions. An omnivore
 and ``Meat``:
 
 >>> guest = Omnivore()
->>> guest.eat(Vegetable('potato', 100))
+>>> guest.eat(Vegetable('potato'))
 potato YUM!
->>> guest.eat(Meat('steak', 500))
+>>> guest.eat(Meat('steak'))
 steak YUM!
 
 But a vegetarian cannot consume ``Meat``:
 
 >>> guest = Vegetarian()
->>> guest.eat(Vegetable('potato', 100))
+>>> guest.eat(Vegetable('potato'))
 potato YUM!
->>> guest.eat(Meat('steak', 500))
+>>> guest.eat(Meat('steak'))
 Traceback (most recent call last):
-    ...
+...
 Exception: steak EWW
+
+..
+    >>> Carnivore().eat(Meat('steak'))
+    steak YUM!
+    >>> Carnivore().eat(Food('gruel'))
+    Traceback (most recent call last):
+    ...
+    Exception: gruel EWW
 
 Note that the code breaks when a ``Vegetarian`` replaces an ``Omnivore``. Therefore, the
 Liskov Substitution Principle implies, perhaps counterintuitively, that ``Vegetarian``
@@ -100,23 +108,29 @@ the call to ``eat`` up the inheritance chain, hoping that another class is able 
 Now the code works as expected:
 
 ..
-    >>> from contravariant import Vegetarian, Carnivore
+    >>> from contravariant import Vegetarian, Carnivore, Omnivore
 
 >>> guest = Vegetarian()
->>> guest.eat(Vegetable('potato', 100))
+>>> guest.eat(Vegetable('potato'))
 potato YUM!
 
 >>> guest = Omnivore()
->>> guest.eat(Vegetable('potato', 100))
+>>> guest.eat(Vegetable('potato'))
 potato YUM!
 
 >>> guest = Carnivore()
->>> guest.eat(Meat('steak', 500))
+>>> guest.eat(Meat('steak'))
 steak YUM!
 
 >>> guest = Omnivore()
->>> guest.eat(Meat('steak', 500))
+>>> guest.eat(Meat('steak'))
 steak YUM!
+
+..
+    >>> Carnivore().eat(Vegetable('potato'))
+    Traceback (most recent call last):
+    ...
+    AttributeError: 'super' object has no attribute 'eat'
 
 We see that a ``Vegetarian`` or ``Carnivore`` can be replaced by an ``Omnivore``, so
 our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:

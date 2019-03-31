@@ -71,7 +71,7 @@
 of its subtype, and the code should still work. For example, suppose we are creating a calorie counter for various
 foods. We have a parent class</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Food</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calories</span> <span class="o">=</span> <span class="n">calories</span>
 </pre></div>
@@ -127,19 +127,19 @@ also work with <span class="docutils literal"><span class="pre">Vegetable</span>
 fed an argument that violates their respective dietary restrictions. An omnivore can consume both <span class="docutils literal"><span class="pre">Vegetable</span></span>
 and <span class="docutils literal"><span class="pre">Meat</span></span>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">))</span>
 <span class="go">potato YUM!</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">))</span>
 <span class="go">steak YUM!</span>
 </pre></div>
 </div>
 <p>But a vegetarian cannot consume <span class="docutils literal"><span class="pre">Meat</span></span>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Vegetarian</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">))</span>
 <span class="go">potato YUM!</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">))</span>
 <span class="gt">Traceback (most recent call last):</span>
-    <span class="o">...</span>
+<span class="c">...</span>
 <span class="gr">Exception</span>: <span class="n">steak EWW</span>
 </pre></div>
 </div>
@@ -172,22 +172,22 @@ Of course, we can repeat the argument for <span class="docutils literal"><span c
 the call to <span class="docutils literal"><span class="pre">eat</span></span> up the inheritance chain, hoping that another class is able to handle the food type.
 Now the code works as expected:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Vegetarian</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">))</span>
 <span class="go">potato YUM!</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">'potato'</span><span class="p">))</span>
 <span class="go">potato YUM!</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Carnivore</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">))</span>
 <span class="go">steak YUM!</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Omnivore</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">,</span> <span class="mi">500</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Meat</span><span class="p">(</span><span class="s1">'steak'</span><span class="p">))</span>
 <span class="go">steak YUM!</span>
 </pre></div>
 </div>

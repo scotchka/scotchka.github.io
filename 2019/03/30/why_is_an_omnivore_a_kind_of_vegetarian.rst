@@ -85,7 +85,7 @@ Exception: steak EWW
     ...
     Exception: gruel EWW
 
-Note that the code breaks when a ``Vegetarian`` replaces an ``Omnivore``. Therefore, the
+The code breaks when an ``Omnivore`` is replaced by a ``Vegetarian``. Therefore, the
 Liskov Substitution Principle implies, perhaps counterintuitively, that ``Vegetarian``
 is not a subclass of ``Omnivore``.
 
@@ -104,8 +104,8 @@ Of course, we can repeat the argument for ``Carnivore``, so ``Omnivore`` inherit
     :pyobject: Omnivore
 
 The key difference here is that, instead of raising an error, ``Vegetarian`` and ``Carnivore`` pass
-the call to ``eat`` up the inheritance chain, hoping that another class is able to eat the kind of food.
-Now the code works as expected:
+the call to ``eat`` up the inheritance chain, hoping that another class is able to accept
+the kind of food. The implementation of ``Omnivore`` is now trivial and intuitive - nothing more than the union of the consumers of ``Vegetable`` and ``Meat``.
 
 ..
     >>> from contravariant import Vegetarian, Carnivore, Omnivore
@@ -134,8 +134,9 @@ steak YUM!
 
 We see that a ``Vegetarian`` or ``Carnivore`` can be replaced by an ``Omnivore``, so
 our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:
-a method of the child class should accept an argument class that is less restrictive
+a method of the child class should accept an argument that is less restrictive
 (or not more restrictive) than the
 corresponding method of the parent class. An ``Omnivore`` can eat either ``Vegetable`` or ``Meat``,
-whereas a ``Vegetarian`` or ``Carnivore`` can only eat one of the food classes. Putting it more
-formally, argument classes are "contravariant".
+whereas a ``Vegetarian`` or ``Carnivore`` can only eat one of the food classes. In other words,
+even though a child class is more specific than its parent, the child's methods take arguments
+that are more general. This property of arguments is known as "contravariance".

@@ -8,8 +8,8 @@ Why is an omnivore a kind of vegetarian?
 .. tags:: none
 .. comments::
 
-An important principle in object oriented design is that you can replace an object of one type with another object
-of its subtype, and the code should still work. For example, suppose we are creating a calorie counter for various
+An important principle in object oriented design is that you can replace an object of one class with another object
+of its subclass, and the code should still work. For example, suppose we are creating a calorie counter for various
 foods. We have a parent class
 
 .. literalinclude:: liskov.py
@@ -44,7 +44,7 @@ also work with ``Vegetable`` and ``Meat``.
 >>> get_calories(Meat('steak', 500))
 500
 
-This ability to replace with a subtype is known as the "Liskov Substitution Principle".
+This ability to replace with a subclass is known as the "Liskov Substitution Principle".
 
 Now let's turn to the consumers of food. Here is a possible class hierarchy:
 
@@ -104,7 +104,7 @@ Of course, we can repeat the argument for ``Carnivore``, so ``Omnivore`` inherit
     :pyobject: Omnivore
 
 The key difference here is that, instead of raising an error, ``Vegetarian`` and ``Carnivore`` pass
-the call to ``eat`` up the inheritance chain, hoping that another class is able to handle the food type.
+the call to ``eat`` up the inheritance chain, hoping that another class is able to eat the kind of food.
 Now the code works as expected:
 
 ..
@@ -134,8 +134,8 @@ steak YUM!
 
 We see that a ``Vegetarian`` or ``Carnivore`` can be replaced by an ``Omnivore``, so
 our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:
-a method of the child class should accept an argument type that is less restrictive
+a method of the child class should accept an argument class that is less restrictive
 (or not more restrictive) than the
 corresponding method of the parent class. An ``Omnivore`` can eat either ``Vegetable`` or ``Meat``,
-whereas a ``Vegetarian`` or ``Carnivore`` can only eat one of the food types. Putting it more
-formally, argument types are "contravariant".
+whereas a ``Vegetarian`` or ``Carnivore`` can only eat one of the food classes. Putting it more
+formally, argument classes are "contravariant".

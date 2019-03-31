@@ -67,8 +67,8 @@
         </div>
     <div class="section" id="why-is-an-omnivore-a-kind-of-vegetarian">
 <h1>Why is an omnivore a kind of vegetarian?</h1>
-<p>An important principle in object oriented design is that you can replace an object of one type with another object
-of its subtype, and the code should still work. For example, suppose we are creating a calorie counter for various
+<p>An important principle in object oriented design is that you can replace an object of one class with another object
+of its subclass, and the code should still work. For example, suppose we are creating a calorie counter for various
 foods. We have a parent class</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Food</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -102,7 +102,7 @@ also work with <span class="docutils literal"><span class="pre">Vegetable</span>
 <span class="go">500</span>
 </pre></div>
 </div>
-<p>This ability to replace with a subtype is known as the “Liskov Substitution Principle”.</p>
+<p>This ability to replace with a subclass is known as the “Liskov Substitution Principle”.</p>
 <p>Now let’s turn to the consumers of food. Here is a possible class hierarchy:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Omnivore</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">eat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">food</span><span class="p">):</span>
@@ -169,7 +169,7 @@ Of course, we can repeat the argument for <span class="docutils literal"><span c
 </pre></div>
 </div>
 <p>The key difference here is that, instead of raising an error, <span class="docutils literal"><span class="pre">Vegetarian</span></span> and <span class="docutils literal"><span class="pre">Carnivore</span></span> pass
-the call to <span class="docutils literal"><span class="pre">eat</span></span> up the inheritance chain, hoping that another class is able to handle the food type.
+the call to <span class="docutils literal"><span class="pre">eat</span></span> up the inheritance chain, hoping that another class is able to eat the kind of food.
 Now the code works as expected:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span> <span class="o">=</span> <span class="n">Vegetarian</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">guest</span><span class="o">.</span><span class="n">eat</span><span class="p">(</span><span class="n">Vegetable</span><span class="p">(</span><span class="s1">&#39;potato&#39;</span><span class="p">))</span>
@@ -193,11 +193,11 @@ Now the code works as expected:</p>
 </div>
 <p>We see that a <span class="docutils literal"><span class="pre">Vegetarian</span></span> or <span class="docutils literal"><span class="pre">Carnivore</span></span> can be replaced by an <span class="docutils literal"><span class="pre">Omnivore</span></span>, so
 our class hierarchy obeys Liskov Substitution. This example also illustrates a general rule:
-a method of the child class should accept an argument type that is less restrictive
+a method of the child class should accept an argument class that is less restrictive
 (or not more restrictive) than the
 corresponding method of the parent class. An <span class="docutils literal"><span class="pre">Omnivore</span></span> can eat either <span class="docutils literal"><span class="pre">Vegetable</span></span> or <span class="docutils literal"><span class="pre">Meat</span></span>,
-whereas a <span class="docutils literal"><span class="pre">Vegetarian</span></span> or <span class="docutils literal"><span class="pre">Carnivore</span></span> can only eat one of the food types. Putting it more
-formally, argument types are “contravariant”.</p>
+whereas a <span class="docutils literal"><span class="pre">Vegetarian</span></span> or <span class="docutils literal"><span class="pre">Carnivore</span></span> can only eat one of the food classes. Putting it more
+formally, argument classes are “contravariant”.</p>
 </div>
 
     <div class="postmeta">

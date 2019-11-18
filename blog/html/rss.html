@@ -5,8 +5,66 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Sat, 30 Mar 2019 00:00:00 -0700</pubDate>
+        <pubDate>Mon, 18 Nov 2019 00:00:00 -0800</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2019/11/18/a_recursive_main_function.html</link>
+            <guid>https://scotchka.github.io/blog/html/2019/11/18/a_recursive_main_function.html</guid>
+            <title><![CDATA[A recursive main function]]></title>
+            <description><![CDATA[<h1>A recursive main function</h1>
+<p>In languages such as C, there is a privileged function - <span class="docutils literal"><span class="pre">main</span></span> - that
+is the entry point for execution. Running the program is tantamount to
+calling <span class="docutils literal"><span class="pre">main</span></span>, which in turn calls other functions.</p>
+<p>Since <span class="docutils literal"><span class="pre">main</span></span> is a name in the global namespace, there is nothing to prevent
+it from calling itself. Consider this recursive <span class="docutils literal"><span class="pre">main</span></span> function that
+calculates the factorial:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">main.c</span></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="c1">#include &lt;stdio.h&gt;</span>
+<span class="c1">#include &lt;stdlib.h&gt;</span>
+
+<span class="nb">int</span> <span class="n">main</span><span class="p">(</span><span class="nb">int</span> <span class="n">argc</span><span class="p">,</span> <span class="n">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+  <span class="n">static</span> <span class="nb">int</span> <span class="n">acc</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s2">"error: need argument</span><span class="se">\n</span><span class="s2">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nb">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s2">"</span><span class="si">%d</span><span class="se">\n</span><span class="s2">"</span><span class="p">,</span> <span class="n">acc</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="n">acc</span><span class="p">;</span>
+    <span class="n">sprintf</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"</span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="o">--</span><span class="n">n</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">main</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p><span class="docutils literal"><span class="pre">main</span></span> takes two inputs. <span class="docutils literal"><span class="pre">argc</span></span> is the number of command line arguments,
+and <span class="docutils literal"><span class="pre">argv</span></span> is an array of those arguments. The library function <span class="docutils literal"><span class="pre">atoi</span></span>
+converts a string to the integer it represents, and <span class="docutils literal"><span class="pre">sprintf</span></span> prints
+to a string rather than standard output. So we decrement <span class="docutils literal"><span class="pre">n</span></span> with each recursive
+call until the base case is reached, and print out the result. The accumulator <span class="docutils literal"><span class="pre">acc</span></span>
+is a static variable, which means it persists across function calls.</p>
+<p>Here is an example output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/>$ gcc main.c
+$ ./a.out 5
+120
+</pre></div>
+</div>
+<p>The fact that this programs works is convincing evidence that <span class="docutils literal"><span class="pre">main</span></span>, other than being
+the entry point, is an ordinary function that can be called from another part of
+the code, including from itself.</p>
+]]></description>
+             <pubDate>Mon, 18 Nov 2019 00:00:00 -0800</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html</link>
             <guid>https://scotchka.github.io/blog/html/2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html</guid>

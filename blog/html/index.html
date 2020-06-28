@@ -31,7 +31,7 @@
         <link rel="search" title="Search" href="search.html" /><link rel="next" title="Older" href="page2.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="rss.html" /><script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.7.0',
+        VERSION:     '1.7.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         SOURCELINK_SUFFIX: '.txt',
@@ -133,7 +133,7 @@ the code, including from itself.</p>
 of its subclass, and the code should still work. For example, suppose we are creating a calorie counter for various
 foods. We have a parent class</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Food</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">calories</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calories</span> <span class="o">=</span> <span class="n">calories</span>
 </pre></div>
@@ -515,7 +515,7 @@ of the resulting function. Indeed, calling the original <span class="docutils li
 <p>More generally, the global scope of a function is the module that contains it. Let’s confirm
 this with a function from a standard module:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">re</span> <span class="k">import</span> <span class="n">match</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">match</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">match</span><span class="o">.</span><span class="vm">__globals__</span> <span class="ow">is</span> <span class="n">re</span><span class="o">.</span><span class="vm">__dict__</span>
 <span class="go">True</span>
 </pre></div>
@@ -703,12 +703,12 @@ avoid self-referential data structures in production code!</p>
 <p>Tree traversal is a well known task for which recursion is simple and natural. We define a Node
 class.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -848,7 +848,7 @@ for turning a recursive function into a tail recursive function: via an intermed
             <h1><a href="2018/07/09/metaclass_intro.html">Metaclasses made simple</a></h1>
 <p>You probably have added the <span class="docutils literal"><span class="pre">__repr__</span></span> method to a Python class:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Cat</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">"&lt;😻&gt;"</span>
 </pre></div>
 </div>
@@ -873,7 +873,7 @@ Python provides an easy way to find out:</p>
 should be able to subclass <span class="docutils literal"><span class="pre">type</span></span>, add methods to it, and instantiate classes using
 our customized type. Here is a small example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">MetaCat</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">repr_string</span>
 </pre></div>
 </div>

@@ -53,7 +53,7 @@ Let's first remedy the latter problem by introducing a decorator function:
 .. literalinclude:: y_combinator_simple.py
 
 The decorator ``y_1`` allows us to write ``fact`` in a more natural way by
-factoring out the "unwrapping" of the enclosing scope. As before,
+factoring out the "unwrapping" of the enclosing scope. But as before,
 
 ..
 	>>> from y_combinator_simple import fact

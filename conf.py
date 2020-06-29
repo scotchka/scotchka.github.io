@@ -22,7 +22,7 @@ description = "Notes and ideas that catch my interest"
 author = "Henry Chen"
 
 # Change this to your copyright string
-copyright = "2018 - 2019, " + author
+copyright = "2018 - 2020, " + author
 
 # Change this to your blog root URL (required for RSS feed)
 website = "https://scotchka.github.io/blog/html/"

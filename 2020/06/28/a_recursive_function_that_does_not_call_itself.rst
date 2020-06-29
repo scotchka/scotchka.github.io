@@ -62,7 +62,7 @@ factoring out the "unwrapping" of the enclosing scope. But as before,
 120
 
 It is straightfoward to eliminate the double reference by having the decorator
-do the replication as well:
+do the "passing in" as well:
 
 .. literalinclude:: y_combinator_final.py
 

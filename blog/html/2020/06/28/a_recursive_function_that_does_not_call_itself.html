@@ -117,7 +117,7 @@ factoring out the “unwrapping” of the enclosing scope. But as before,</p>
 </pre></div>
 </div>
 <p>It is straightfoward to eliminate the double reference by having the decorator
-do the replication as well:</p>
+do the “passing in” as well:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">y_2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">))(</span>
     <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
 <span class="p">)</span>

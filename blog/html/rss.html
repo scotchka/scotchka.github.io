@@ -5,8 +5,95 @@
         <link>https://scotchka.github.io/blog/html/</link>
         <description>Mostly Python</description>
         <language>en-us</language>
-        <pubDate>Mon, 18 Nov 2019 00:00:00 -0800</pubDate>
+        <pubDate>Sun, 28 Jun 2020 00:00:00 -0700</pubDate>
         
+        <item>
+            <link>https://scotchka.github.io/blog/html/2020/06/28/a_recursive_function_that_does_not_call_itself.html</link>
+            <guid>https://scotchka.github.io/blog/html/2020/06/28/a_recursive_function_that_does_not_call_itself.html</guid>
+            <title><![CDATA[A recursive function that does not call itself]]></title>
+            <description><![CDATA[<h1>A recursive function that does not call itself</h1>
+<p>Consider the standard implementation of factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>The <span class="docutils literal"><span class="pre">lambda</span></span> expression
+creates anonymous or inline functions in Python. However, here
+we are effectively naming the function by assigning it to the variable <span class="docutils literal"><span class="pre">fact</span></span>.
+This assignment is necessary because the function itself refers to <span class="docutils literal"><span class="pre">fact</span></span>, which
+means we cannot use this function inline.</p>
+<p>If we insist on a truly anonymous version of factorial, it helps to think of
+self-reference not as a defining feature of recursion, but an implementation
+detail. It is merely a very convenient way to apply the same function on progressively
+smaller inputs. Without self-reference, we need a different way to talk about
+the same function. The trick is to create an enclosing scope and pass in the function itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the outer scope, <span class="docutils literal"><span class="pre">f</span></span> refers to <span class="docutils literal"><span class="pre">fact</span></span>, and since it now has an outer scope,
+<span class="docutils literal"><span class="pre">f(f)</span></span> is the inner function, ie, the actual computation. Hence we have to call
+<span class="docutils literal"><span class="pre">fact</span></span> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Having removed self-reference, we can replace <span class="docutils literal"><span class="pre">fact</span></span> with its
+value to arrive at an inline factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>While achieving the goal of a recursive function that does not call itself,
+the above example contains two copies of the factorial logic and the awkward
+<span class="docutils literal"><span class="pre">f(f)</span></span>.</p>
+<p>Let’s first remedy the latter problem by introducing a decorator function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">y_1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_1</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The decorator <span class="docutils literal"><span class="pre">y_1</span></span> allows us to write <span class="docutils literal"><span class="pre">fact</span></span> in a more natural way by
+factoring out the “unwrapping” of the enclosing scope. As before,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>It is straightfoward to eliminate the double reference by having the decorator
+do the replication as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">y_2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">))(</span>
+    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_2</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">fact</span></span> now works as a normal function should:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Note that <span class="docutils literal"><span class="pre">y_2</span></span> has nothing to do with factorials (parameter names are arbitrary). To confirm this, let’s apply it to a version of quicksort:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">y_2</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">lst</span><span class="p">:</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">lst</span>  <span class="c1"># base case</span>
+<span class="gp">... </span>    <span class="k">else</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span><span class="p">)([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>We see that <span class="docutils literal"><span class="pre">y_2</span></span> is part of a generic recipe to create recursive functions without self-reference. It is an implementation of the Y combinator, which
+was invented in the context of the lambda calculus, a formal language that does not have variables - so every “program” is basically an inline function call.
+Remarkably, the Y combinator shows that even such a minimal language is capable of
+doing recursive computation.</p>
+]]></description>
+             <pubDate>Sun, 28 Jun 2020 00:00:00 -0700</pubDate>
+        </item>
+    
         <item>
             <link>https://scotchka.github.io/blog/html/2019/11/18/a_recursive_main_function.html</link>
             <guid>https://scotchka.github.io/blog/html/2019/11/18/a_recursive_main_function.html</guid>

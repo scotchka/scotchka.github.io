@@ -63,6 +63,97 @@
                 </li>
               </ul>
           </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>June 28, 2020</span>
+        </div>
+        <div class="section">
+            <h1><a href="2020/06/28/a_recursive_function_that_does_not_call_itself.html">A recursive function that does not call itself</a></h1>
+<p>Consider the standard implementation of factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>The <span class="docutils literal"><span class="pre">lambda</span></span> expression
+creates anonymous or inline functions in Python. However, here
+we are effectively naming the function by assigning it to the variable <span class="docutils literal"><span class="pre">fact</span></span>.
+This assignment is necessary because the function itself refers to <span class="docutils literal"><span class="pre">fact</span></span>, which
+means we cannot use this function inline.</p>
+<p>If we insist on a truly anonymous version of factorial, it helps to think of
+self-reference not as a defining feature of recursion, but an implementation
+detail. It is merely a very convenient way to apply the same function on progressively
+smaller inputs. Without self-reference, we need a different way to talk about
+the same function. The trick is to create an enclosing scope and pass in the function itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the outer scope, <span class="docutils literal"><span class="pre">f</span></span> refers to <span class="docutils literal"><span class="pre">fact</span></span>, and since it now has an outer scope,
+<span class="docutils literal"><span class="pre">f(f)</span></span> is the inner function, ie, the actual computation. Hence we have to call
+<span class="docutils literal"><span class="pre">fact</span></span> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Having removed self-reference, we can replace <span class="docutils literal"><span class="pre">fact</span></span> with its
+value to arrive at an inline factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>While achieving the goal of a recursive function that does not call itself,
+the above example contains two copies of the factorial logic and the awkward
+<span class="docutils literal"><span class="pre">f(f)</span></span>.</p>
+<p>Let’s first remedy the latter problem by introducing a decorator function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">y_1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_1</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The decorator <span class="docutils literal"><span class="pre">y_1</span></span> allows us to write <span class="docutils literal"><span class="pre">fact</span></span> in a more natural way by
+factoring out the “unwrapping” of the enclosing scope. As before,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>It is straightfoward to eliminate the double reference by having the decorator
+do the replication as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="n">y_2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">))(</span>
+    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_2</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">fact</span></span> now works as a normal function should:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Note that <span class="docutils literal"><span class="pre">y_2</span></span> has nothing to do with factorials (parameter names are arbitrary). To confirm this, let’s apply it to a version of quicksort:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">y_2</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">lst</span><span class="p">:</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">lst</span>  <span class="c1"># base case</span>
+<span class="gp">... </span>    <span class="k">else</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span><span class="p">)([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>We see that <span class="docutils literal"><span class="pre">y_2</span></span> is part of a generic recipe to create recursive functions without self-reference. It is an implementation of the Y combinator, which
+was invented in the context of the lambda calculus, a formal language that does not have variables - so every “program” is basically an inline function call.
+Remarkably, the Y combinator shows that even such a minimal language is capable of
+doing recursive computation.</p>
+
+        </div>
+        <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        </div><div class="separator post_separator"></div><div class="timestamp postmeta">
             <span>November 18, 2019</span>
         </div>
         <div class="section">
@@ -841,73 +932,6 @@ for turning a recursive function into a tail recursive function: via an intermed
         </div>
         
         
-        </div><div class="separator post_separator"></div><div class="timestamp postmeta">
-            <span>July 09, 2018</span>
-        </div>
-        <div class="section">
-            <h1><a href="2018/07/09/metaclass_intro.html">Metaclasses made simple</a></h1>
-<p>You probably have added the <span class="docutils literal"><span class="pre">__repr__</span></span> method to a Python class:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">Cat</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">"&lt;😻&gt;"</span>
-</pre></div>
-</div>
-<p>This gives a customized representation to the instance at the command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">Cat</span><span class="p">()</span>
-<span class="go">&lt;😻&gt;</span>
-</pre></div>
-</div>
-<p>However, this <span class="docutils literal"><span class="pre">__repr__</span></span> has no effect on the class itself:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">Cat</span>
-<span class="go">&lt;class 'meta_cats.Cat'&gt;</span>
-</pre></div>
-</div>
-<p>The reason is that a method defined on a class acts on instances of the class but not
-the class itself. But what if the class is itself an instance? An instance of what class?
-Python provides an easy way to find out:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">Cat</span><span class="p">)</span>
-<span class="go">&lt;class 'type'&gt;</span>
-</pre></div>
-</div>
-<p>So we see that a class is an instance of the built-in class <span class="docutils literal"><span class="pre">type</span></span>. This means that we
-should be able to subclass <span class="docutils literal"><span class="pre">type</span></span>, add methods to it, and instantiate classes using
-our customized type. Here is a small example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">MetaCat</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">repr_string</span>
-</pre></div>
-</div>
-<p>Note that <span class="docutils literal"><span class="pre">MetaCat</span></span> descends from <span class="docutils literal"><span class="pre">type</span></span> and has a <span class="docutils literal"><span class="pre">__repr__</span></span> method that has a parameter
-<span class="docutils literal"><span class="pre">cls</span></span>. This is to emphasize that instances of <span class="docutils literal"><span class="pre">MetaCat</span></span> are themselves classes.</p>
-<p>We can instantiate a class in the usual way, except for an additional optional parameter.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="k">class</span> <span class="nc">FancyCat</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaCat</span><span class="p">):</span>
-    <span class="n">repr_string</span> <span class="o">=</span> <span class="s2">"&lt;class 😻&gt;"</span>
-</pre></div>
-</div>
-<p>The <span class="docutils literal"><span class="pre">metaclass</span></span> parameter in the class definition instructs Python to make an instance of <span class="docutils literal"><span class="pre">MetaCat</span></span>
-instead of <span class="docutils literal"><span class="pre">type</span></span>. Let’s verify this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">FancyCat</span><span class="p">)</span> <span class="ow">is</span> <span class="n">MetaCat</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-<p>Finally, let’s see what happens when we evaluate the class <span class="docutils literal"><span class="pre">FancyCat</span></span> on the Python command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span/><span class="gp">&gt;&gt;&gt; </span><span class="n">FancyCat</span>
-<span class="go">&lt;class 😻&gt;</span>
-</pre></div>
-</div>
-<p>Indeed, the <span class="docutils literal"><span class="pre">__repr__</span></span> method defined on <span class="docutils literal"><span class="pre">MetaCat</span></span> is called, and returns a customized representaion.</p>
-<p>To summarize, every class in Python is an instance of some class, often referred to as a metaclass to
-distinguish it from other classes. <span class="docutils literal"><span class="pre">type</span></span> is the built-in metaclass of which <span class="docutils literal"><span class="pre">int</span></span>, <span class="docutils literal"><span class="pre">dict</span></span>, and your own
-classes are instances. And just like with most classes, you can subclass <span class="docutils literal"><span class="pre">type</span></span> to make custom metaclasses,
-analogous to subclassing <span class="docutils literal"><span class="pre">object</span></span> to make custom classes.</p>
-
-        </div>
-        <div class="postmeta">
-        <div class="author">
-            <span>Posted by Henry Chen</span>
-        </div>
-        
-        
         </div><div class="archive_link">
         <a href="archive.html"> &mdash; Blog Archive &mdash; </a>
     </div><ul class="related clearfix">
@@ -916,6 +940,8 @@ analogous to subclassing <span class="docutils literal"><span class="pre">object
         </ul></article><aside class="sidebar"><section><div class="widget">
     <h1>Recent Posts</h1>
     <ul><li>
+            <a href="2020/06/28/a_recursive_function_that_does_not_call_itself.html">A recursive function that does not call itself</a>
+        </li><li>
             <a href="2019/11/18/a_recursive_main_function.html">A recursive main function</a>
         </li><li>
             <a href="2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html">Why is an omnivore a kind of vegetarian?</a>
@@ -933,8 +959,6 @@ analogous to subclassing <span class="docutils literal"><span class="pre">object
             <a href="2018/07/21/self_referential_markov.html">Self-referential data structures</a>
         </li><li>
             <a href="2018/07/13/tree_traversal_the_hard_way.html">Tree traversal made hard</a>
-        </li><li>
-            <a href="2018/07/09/metaclass_intro.html">Metaclasses made simple</a>
         </li></ul>
 </div>
 </section><section><div class="widget" id="searchbox" role="search">

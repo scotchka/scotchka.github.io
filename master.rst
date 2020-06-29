@@ -4,6 +4,7 @@ Sitemap
 .. toctree::
    :maxdepth: 1
 
+   2020/06/28/a_recursive_function_that_does_not_call_itself
    2019/11/18/a_recursive_main_function
    2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian
    2018/12/31/building_a_data_structure_with_nothing_but_functions

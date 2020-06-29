@@ -1,0 +1,209 @@
+<!DOCTYPE html><!--[if lt IE 7]>      <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="Notes and ideas that catch my interest">
+        <meta name="viewport" content="width=device-width">
+        <title>A recursive function that does not call itself &mdash; Code Miscellany</title>
+            <link rel="stylesheet" href="../../../_static/normalize.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/sphinx.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/main.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/flat.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="../../../_static/style.css" type="text/css" /><link rel="shortcut icon" href="../../../_static/henry.ico" /><!-- Load modernizr and JQuery -->
+        <script src="../../../_static/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="../../../_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="../../../_static/plugins.js"></script>
+        <script src="../../../_static/main.js"></script>
+        <link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="A recursive main function" href="../../../2019/11/18/a_recursive_main_function.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="../../../rss.html" /><script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.7.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        SOURCELINK_SUFFIX: '.txt',
+        HAS_SOURCE:  true
+      };
+    </script><script type="text/javascript" src="../../../_static/underscore.js"></script><script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Scroll to content if on small screen
+            if (screen.width < 480)
+            {
+                $(document).scrollTop(document.getElementsByTagName("article")[0].offsetTop - 44);
+            }
+        });
+    </script></head>
+    <body role="document">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+      <div id="container"><header role="banner">
+            <hgroup>
+              <h1><a href="../../../index.html">Code Miscellany</a></h1><h2>Mostly Python</h2></hgroup>
+          </header>
+      <nav role="navigation">
+            <ul><li class="main-nav">
+                  <a href="../../../index.html">Home</a>
+                </li>
+              </ul>
+          </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>June 28, 2020</span>
+        </div>
+    <div class="section" id="a-recursive-function-that-does-not-call-itself">
+<h1>A recursive function that does not call itself</h1>
+<p>Consider the standard implementation of factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fact</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>The <span class="docutils literal"><span class="pre">lambda</span></span> expression
+creates anonymous or inline functions in Python. However, here
+we are effectively naming the function by assigning it to the variable <span class="docutils literal"><span class="pre">fact</span></span>.
+This assignment is necessary because the function itself refers to <span class="docutils literal"><span class="pre">fact</span></span>, which
+means we cannot use this function inline.</p>
+<p>If we insist on a truly anonymous version of factorial, it helps to think of
+self-reference not as a defining feature of recursion, but an implementation
+detail. It is merely a very convenient way to apply the same function on progressively
+smaller inputs. Without self-reference, we need a different way to talk about
+the same function. The trick is to create an enclosing scope and pass in the function itself:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the outer scope, <span class="docutils literal"><span class="pre">f</span></span> refers to <span class="docutils literal"><span class="pre">fact</span></span>, and since it now has an outer scope,
+<span class="docutils literal"><span class="pre">f(f)</span></span> is the inner function, ie, the actual computation. Hence we have to call
+<span class="docutils literal"><span class="pre">fact</span></span> as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Having removed self-reference, we can replace <span class="docutils literal"><span class="pre">fact</span></span> with its
+value to arrive at an inline factorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">)(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>While achieving the goal of a recursive function that does not call itself,
+the above example contains two copies of the factorial logic and the awkward
+<span class="docutils literal"><span class="pre">f(f)</span></span>.</p>
+<p>Let’s first remedy the latter problem by introducing a decorator function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">y_1</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_1</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The decorator <span class="docutils literal"><span class="pre">y_1</span></span> allows us to write <span class="docutils literal"><span class="pre">fact</span></span> in a more natural way by
+factoring out the “unwrapping” of the enclosing scope. As before,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="n">fact</span><span class="p">)(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>It is straightfoward to eliminate the double reference by having the decorator
+do the replication as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">y_2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fact</span><span class="p">:</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">))(</span>
+    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">fact</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">f</span><span class="p">))(</span><span class="n">n</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">fact</span> <span class="o">=</span> <span class="n">y_2</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">f</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><span class="docutils literal"><span class="pre">fact</span></span> now works as a normal function should:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fact</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="go">120</span>
+</pre></div>
+</div>
+<p>Note that <span class="docutils literal"><span class="pre">y_2</span></span> has nothing to do with factorials (parameter names are arbitrary). To confirm this, let’s apply it to a version of quicksort:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y_2</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">lst</span><span class="p">:</span> <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">lst</span>  <span class="c1"># base case</span>
+<span class="gp">... </span>    <span class="k">else</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="p">[</span><span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="gp">... </span>    <span class="o">+</span> <span class="n">f</span><span class="p">([</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">... </span><span class="p">)([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>We see that <span class="docutils literal"><span class="pre">y_2</span></span> is part of a generic recipe to create recursive functions without self-reference. It is an implementation of the Y combinator, which
+was invented in the context of the lambda calculus, a formal language that does not have variables - so every “program” is basically an inline function call.
+Remarkably, the Y combinator shows that even such a minimal language is capable of
+doing recursive computation.</p>
+</div>
+
+    <div class="postmeta">
+        <div class="author">
+            <span>Posted by Henry Chen</span>
+        </div>
+        
+        
+        </div><ul class="related clearfix">
+            <li class="left"></li>
+            <li class="right"><a href="../../../2019/11/18/a_recursive_main_function.html">A recursive main function</a> &raquo; </li>
+        </ul></article><aside class="sidebar"><section><div class="widget">
+    <h1>Recent Posts</h1>
+    <ul><li>
+            <a href="#">A recursive function that does not call itself</a>
+        </li><li>
+            <a href="../../../2019/11/18/a_recursive_main_function.html">A recursive main function</a>
+        </li><li>
+            <a href="../../../2019/03/30/why_is_an_omnivore_a_kind_of_vegetarian.html">Why is an omnivore a kind of vegetarian?</a>
+        </li><li>
+            <a href="../../../2018/12/31/building_a_data_structure_with_nothing_but_functions.html">Building a data structure with nothing but functions</a>
+        </li><li>
+            <a href="../../../2018/11/15/stackless_merge_sort.html">Stackless merge sort</a>
+        </li><li>
+            <a href="../../../2018/11/08/stackless_quicksort.html">Stackless quicksort</a>
+        </li><li>
+            <a href="../../../2018/10/09/instantiating_functions_and_modules.html">Instantiating functions and modules</a>
+        </li><li>
+            <a href="../../../2018/08/20/little_endian.html">Determining endianness</a>
+        </li><li>
+            <a href="../../../2018/07/21/self_referential_markov.html">Self-referential data structures</a>
+        </li><li>
+            <a href="../../../2018/07/13/tree_traversal_the_hard_way.html">Tree traversal made hard</a>
+        </li></ul>
+</div>
+</section><section><div class="widget" id="searchbox" role="search">
+    <h1><a href="#searchbox">Search</a></h1>
+    <form action="../../../search.html" method="get">
+        <input type="text" name="q" />
+        <button type="submit"><span class="fa fa-search"></span></button>
+    </form>
+</div></section></aside></div> <!-- #main --></div> <!-- #main-container -->
+
+        <div class="footer-container" role="contentinfo">
+    <footer class="wrapper">&copy; Copyright 2018 - 2019, Henry Chen. Powered by <a href="http://www.tinkerer.me/">Tinkerer</a> and <a href="http://sphinx.pocoo.org/">Sphinx</a>.</footer>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-121190098-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-121190098-1');
+</script>
+</div> <!-- footer-container -->
+
+      </div> <!--! end of #container --><!--[if lt IE 7 ]>
+          <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+          <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+        <![endif]-->
+    </body>
+</html>
